@@ -1,0 +1,12 @@
+Please beware this file is a stub and replaced after sources are uploaded.
+
+Baíran is a very low-level but platform independent vm, written in C.
+It is uncommon mainly in tree aspects:
+
+* New instructions can be generated at runtime (which extend the instruction
+  set without special encoding) from vm-code sequences.
+
+* The encoding ensures high performance though instruction bundling and 
+  support for fine-grained parallel execution.
+
+* It's a accumulator/store design with efficient interpretation in mind.

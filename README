@@ -1,12 +1,15 @@
 Please beware this file is a stub and replaced after sources are uploaded.
 
-Baíran is a very low-level but platform independent vm, written in C.
+The extended Ngaro VM is a very low-level but platform independent vm, 
+written in C. It evolved from Ngaro (see retro forth) and is binary
+compatible with it.
+
 It is uncommon mainly in tree aspects:
 
 * New instructions can be generated at runtime (which extend the instruction
-  set without special encoding) from vm-code sequences.
+  set) from vm-code sequences.
 
-* The encoding ensures high performance though instruction bundling and 
-  support for fine-grained parallel execution.
+* The encoding ensures high performance though a platform independent
+  native-code compiler and support for stack, register and matrix operations.
 
 * It's a accumulator/store design with efficient interpretation in mind.

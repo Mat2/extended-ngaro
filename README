@@ -1,10 +1,8 @@
-Please beware this file is a stub and replaced after sources are uploaded.
-
-The extended Ngaro VM is a very low-level but platform independent vm, 
-written in C. It evolved from Ngaro (see retro forth) and is binary
+The extended ngaro vm is a very low-level but platform independent vm, 
+written in C. It evolved from ngaro (see retro forth 10) and is binary
 compatible with it.
 
-It is uncommon mainly in tree aspects:
+It is uncommon mainly in tree aspects (when finished):
 
 * New instructions can be generated at runtime (which extend the instruction
   set) from vm-code sequences.
@@ -13,3 +11,19 @@ It is uncommon mainly in tree aspects:
   native-code compiler and support for stack, register and matrix operations.
 
 * It's a accumulator/store design with efficient interpretation in mind.
+
+Current status:
+
+The vm is usable but the compiler part isn't finished yet.
+
+Compilation:
+
+Download the current ngaro sources and replace the console folder. Building
+is done without modifications (make vm).
+
+Remark:
+
+The replicated-switch threading method performs better on my Athlon64 3000x
+than the older indirect-token threading interpeter (see ngaro-fast) and results
+in an equal performance on Celeron M and possibly Atom based cpu's. So, for
+performance reasons use this vm !

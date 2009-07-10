@@ -65,7 +65,7 @@ void vm_process(VM *vm)
            vm->ip++;
            TOS = acc;
            acc = VMOP;
-	   vm->ip++;
+           vm->ip++;
            NEXT;
 
 			    	/***************************************************/
@@ -76,7 +76,7 @@ void vm_process(VM *vm)
 
   fVM_DUP: vm->sp++;
            vm->data[vm->sp] = acc;
-	   vm->ip++;
+           vm->ip++;
            NEXT;
 
     				/***************************************************/
@@ -97,7 +97,7 @@ void vm_process(VM *vm)
   fVM_SWAP: a = TOS;
             TOS = acc;
             acc = a;
-	    vm->ip++; 
+            vm->ip++; 
             NEXT;
  
     				/***************************************************/
@@ -111,7 +111,7 @@ void vm_process(VM *vm)
             TORS = acc;
             acc = vm->data[vm->sp];
             vm->sp--;
-	    vm->ip++;
+            vm->ip++;
             NEXT;
 
     				/***************************************************/
@@ -125,7 +125,7 @@ void vm_process(VM *vm)
            TOS = acc;
            acc = TORS;
            vm->rsp--;
-	   vm->ip++;
+           vm->ip++;
            NEXT;
 
     				/***************************************************/
@@ -185,7 +185,7 @@ void vm_process(VM *vm)
     				/***************************************************/
 
    fVM_LT_JUMP: vm->ip++;
-         	if(TOS < acc)
+                if(TOS < acc)
                   vm->ip = VMOP;
                 else vm->ip++;
                 vm->sp--;
@@ -200,7 +200,7 @@ void vm_process(VM *vm)
     				/***************************************************/
 
    fVM_NE_JUMP: vm->ip++;
-         	if(acc != TOS)
+                if(acc != TOS)
                   vm->ip = VMOP;
                 else vm->ip++;
                 vm->sp--;
@@ -215,7 +215,7 @@ void vm_process(VM *vm)
     				/***************************************************/
 
    fVM_EQ_JUMP: vm->ip++;
-         	if(acc == TOS)
+                if(acc == TOS)
                   vm->ip = VMOP;
                 else vm->ip++;
                 vm->sp--;

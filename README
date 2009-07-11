@@ -7,8 +7,9 @@ It is uncommon mainly in tree aspects (when finished):
 * New instructions can be generated at runtime (which extend the instruction
   set) from vm-code sequences.
 
-* The encoding ensures high performance though a platform independent
-  native-code compiler and support for stack, register and matrix operations.
+* The vm encoding is extended though a native-code compiler with added 
+  support for stack, register and matrix operations. This way optimated 
+  machine code can be generated in a platform independent way.
 
 * It's a accumulator/store design with efficient interpretation in mind.
 

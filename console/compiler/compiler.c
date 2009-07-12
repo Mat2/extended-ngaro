@@ -10,11 +10,11 @@
  ******************************************************/
 
 #ifdef X86_64
-  #include "arch/x86-64/primitives.c"
+  #include "arch/x86-64/primitives.h"
 #elsif X86_32
-  #include "arch/x86-32/primitives.c"
+  #include "arch/x86-32/primitives.h"
 #elsif MIPS
-  #include "arch/MIPS/primitives.c"
+  #include "arch/MIPS/primitives.h"
 #elsif POWERPC
   #include "arch/POWERPC/primitives.h"
 #elsif ARM
@@ -41,6 +41,10 @@ void comp_init (int tracemem)
   comp_tbuffer = tmem;
   comp_cbuffer = cmem;
 
+  /* save buffer lenghts */
+
+  comp_clen = tracemem;
+
   /* clear local stack areas */
 
   int i;
@@ -52,6 +56,22 @@ void comp_init (int tracemem)
   mprotect ((void*) comp_dstack,  CSTACK_DEPTH, PROT_READ | PROT_WRITE);
   mprotect ((void*) comp_rstack,  CSTACK_DEPTH, PROT_READ | PROT_WRITE);
   mprotect ((void*) comp_cbuffer, tracemem,     PROT_READ | PROT_WRITE | PROT_EXEC);
+}
+
+/* update binary buffer */
+
+int comp_flush (void);
+{
+  int clen = comp_cofs - comp_cptr;
+  int cbuf = comp_cbuffer + comp_cptr;
+  int tbuf  = comp_tbuffer + comp_tptr;
+
+  if (cbuf > comp_clen) { printf ("NGARO: E3\n"); exit (-1); }
+
+  memcpy ((void*) cbuf, (int) clen, (void*) tbuf);
+
+  comp_tptr = 0;
+  comp_cptr = cbuf + clen;
 }
 
 /* call trace */
@@ -73,7 +93,7 @@ int comp_execute (int trace, VM *vm)
 
   /* call function (trace) */
 
-  (comp_cbuffer + trace) ();
+  vm->data[vm->sp] = (comp_cbuffer + trace) ();
 
   /* restore C specific register allocation */
 

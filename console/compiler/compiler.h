@@ -23,10 +23,16 @@ typedef signed int    word;
 typedef int           (*function) ();
 
 /* comp_clen: Lenght of trace buffer 
-   comp_cptr: pointer to first free byte in trace buffer */
+   comp_cptr: pointer to first free byte in binary buffer 
+   comp_tptr: pointer to first free byte in trace buffer */
 
 int comp_clen;
 int comp_cptr;
+int comp_tptr;
+
+/* offset into actual compilation */
+
+int comp_cofs;
 
 /* trace and execution buffer */
 
@@ -41,3 +47,12 @@ int comp_rstack [CSTACK_DEPTH];
 /* pointer into actual stack frame */
 
 int comp_sptr;
+
+/* union for representation of immediate values */
+
+typedef union
+{
+  int  w;     /* whole word */
+  byte b[3];  /* word bytes */
+
+} imm;

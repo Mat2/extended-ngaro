@@ -18,26 +18,26 @@
 
 /* some useful type declarations */
 
-typedef unsigned char byte;
-typedef signed int    word;
+typedef unsigned char uint8;
+typedef signed int    int32;
 typedef int           (*function) ();
 
-/* comp_clen: Lenght of trace buffer 
-   comp_cptr: pointer to first free byte in binary buffer 
-   comp_tptr: pointer to first free byte in trace buffer */
+/* comp_clen: Lenght of trace and binary buffer 
+   comp_cptr: offset to first free uint8 in binary buffer 
+   comp_tptr: offset to first free uint8 in trace buffer */
 
 int comp_clen;
 int comp_cptr;
 int comp_tptr;
 
-/* offset into actual compilation */
+/* offset into actual trace */
 
 int comp_cofs;
 
-/* trace and execution buffer */
+/* trace and execution buffer (base address) */
 
-function comp_cbuffer;
-byte     comp_tbuffer;
+function  comp_cbuffer;
+uint8    *comp_tbuffer;
 
 /* private data and address stacks for traces */
 
@@ -52,7 +52,7 @@ int comp_sptr;
 
 typedef union
 {
-  int  w;     /* whole word */
-  byte b[3];  /* word bytes */
+  int   w;     /* whole word */
+  uint8 b[3];  /* bytes of word */
 
 } imm;

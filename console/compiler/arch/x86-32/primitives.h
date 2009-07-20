@@ -9,15 +9,23 @@
  * Released into the public domain
  ******************************************************/
 
-#define COMP_REGISTER register int comp_acc; asm("eax"); \
-                      register int comp_opn; asm("ebx");
+#define COMP_REGISTER register int comp_acc asm("eax"); \
+                      register int comp_opn asm("ebx");
 
-#define COMP_PROLOG asm("pushad");                \
-                    asm("mov $comp_dstack, %ecx"; \
-                    asm("mov $comp_rstack, %edx"; \
-                    asm("xor edi, edi");
+#define COMP_PROLOG asm volatile ("push %eax");               \
+                    asm volatile ("push %ebx");               \
+                    asm volatile ("push %ecx");               \
+                    asm volatile ("push %edx");               \
+                    asm volatile ("push %edi");               \
+                    asm volatile ("mov $comp_dstack, %ecx");  \
+                    asm volatile ("mov $comp_rstack, %edx");  \
+                    asm volatile ("xor %edi, %edi");
 
-#define COMP_EPILOG asm("popad");
+#define COMP_EPILOG asm volatile ("pop %edi"); \
+                    asm volatile ("pop %edx"); \
+                    asm volatile ("pop %ecx"); \
+                    asm volatile ("pop %ebx"); \
+                    asm volatile ("pop %eax");
 
 void comp_return (void)
 {
@@ -33,10 +41,10 @@ void comp_lit (imm value)
   comp_tbuffer[comp_tptr++] = 0xC3;
 
   comp_tbuffer[comp_tptr++] = 0xB8;      /* mov eax,nnnnnnnn */
-  comp_tbuffer[comp_tptr++] = imm.b[3];
-  comp_tbuffer[comp_tptr++] = imm.b[2];
-  comp_tbuffer[comp_tptr++] = imm.b[1];
-  comp_tbuffer[comp_tptr++] = imm.b[0];
+  comp_tbuffer[comp_tptr++] = value.b[3];
+  comp_tbuffer[comp_tptr++] = value.b[2];
+  comp_tbuffer[comp_tptr++] = value.b[1];
+  comp_tbuffer[comp_tptr++] = value.b[0];
 
   comp_tbuffer[comp_tptr++] = 0x83;      /* add ecx, 4 */
   comp_tbuffer[comp_tptr++] = 0xC1;
@@ -116,13 +124,13 @@ void comp_pop (void)
 
 void comp_call (function trace)
 {
-  imm location; location.v = (imm) trace;
+  imm loc; loc.w = (int) trace;
 
   comp_tbuffer[comp_tptr++] = 0xBF;      /* mov edi,nnnnnnnn */
-  comp_tbuffer[comp_tptr++] = imm.b[3];
-  comp_tbuffer[comp_tptr++] = imm.b[2];
-  comp_tbuffer[comp_tptr++] = imm.b[1];
-  comp_tbuffer[comp_tptr++] = imm.b[0];
+  comp_tbuffer[comp_tptr++] = loc.b[3];
+  comp_tbuffer[comp_tptr++] = loc.b[2];
+  comp_tbuffer[comp_tptr++] = loc.b[1];
+  comp_tbuffer[comp_tptr++] = loc.b[0];
 
   comp_tbuffer[comp_tptr++] = 0xFF;      /* call edi */
   comp_tbuffer[comp_tptr++] = 0xD7;
@@ -130,13 +138,13 @@ void comp_call (function trace)
 
 void comp_jump (function trace)
 {
-  imm location; location.v = (imm) trace;
+  imm loc; loc.w = (int) trace;
 
   comp_tbuffer[comp_tptr++] = 0xBF;      /* mov edi,nnnnnnnn */
-  comp_tbuffer[comp_tptr++] = imm.b[3];
-  comp_tbuffer[comp_tptr++] = imm.b[2];
-  comp_tbuffer[comp_tptr++] = imm.b[1];
-  comp_tbuffer[comp_tptr++] = imm.b[0];
+  comp_tbuffer[comp_tptr++] = loc.b[3];
+  comp_tbuffer[comp_tptr++] = loc.b[2];
+  comp_tbuffer[comp_tptr++] = loc.b[1];
+  comp_tbuffer[comp_tptr++] = loc.b[0];
 
   comp_tbuffer[comp_tptr++] = 0xFF;      /* jmp edi */
   comp_tbuffer[comp_tptr++] = 0xE7;
@@ -144,17 +152,17 @@ void comp_jump (function trace)
 
 void comp_gt_jump (function trace)
 {
-  imm location; location.v = (imm) trace;
+  imm loc; loc.w = (int) trace;
 
   comp_tbuffer[comp_tptr++] = 0x83;       /* sub ecx, 16 */
   comp_tbuffer[comp_tptr++] = 0xE9;
   comp_tbuffer[comp_tptr++] = 0x10;
 
   comp_tbuffer[comp_tptr++] = 0xBF;       /* mov edi,nnnnnnnn */
-  comp_tbuffer[comp_tptr++] = imm.b[3];
-  comp_tbuffer[comp_tptr++] = imm.b[2];
-  comp_tbuffer[comp_tptr++] = imm.b[1];
-  comp_tbuffer[comp_tptr++] = imm.b[0];
+  comp_tbuffer[comp_tptr++] = loc.b[3];
+  comp_tbuffer[comp_tptr++] = loc.b[2];
+  comp_tbuffer[comp_tptr++] = loc.b[1];
+  comp_tbuffer[comp_tptr++] = loc.b[0];
 
   comp_tbuffer[comp_tptr++] = 0x39;      /* cmp ebx, eax*/
   comp_tbuffer[comp_tptr++] = 0xC3;
@@ -186,17 +194,17 @@ void comp_gt_jump (function trace)
 
 void comp_lt_jump (function trace)
 {
-  imm location; location.v = (imm) trace;
+  imm loc; loc.w = (int) trace;
 
-  comp_tbuffer[comp_tptr++] = 0x83;      /* sub ecx, 16 */
+  comp_tbuffer[comp_tptr++] = 0x83;       /* sub ecx, 16 */
   comp_tbuffer[comp_tptr++] = 0xE9;
   comp_tbuffer[comp_tptr++] = 0x10;
 
-  comp_tbuffer[comp_tptr++] = 0xBF;      /* mov edi,nnnnnnnn */
-  comp_tbuffer[comp_tptr++] = imm.b[3];
-  comp_tbuffer[comp_tptr++] = imm.b[2];
-  comp_tbuffer[comp_tptr++] = imm.b[1];
-  comp_tbuffer[comp_tptr++] = imm.b[0];
+  comp_tbuffer[comp_tptr++] = 0xBF;       /* mov edi,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = loc.b[3];
+  comp_tbuffer[comp_tptr++] = loc.b[2];
+  comp_tbuffer[comp_tptr++] = loc.b[1];
+  comp_tbuffer[comp_tptr++] = loc.b[0];
 
   comp_tbuffer[comp_tptr++] = 0x39;      /* cmp ebx, eax*/
   comp_tbuffer[comp_tptr++] = 0xC3;
@@ -226,19 +234,19 @@ void comp_lt_jump (function trace)
   comp_tbuffer[comp_tptr++] = 0xFC;
 }
 
-void comp_eq_jump (function trace)
+void comp_ne_jump (function trace)
 {
-  imm location; location.v = (imm) trace;
+  imm loc; loc.w = (int) trace;
 
-  comp_tbuffer[comp_tptr++] = 0x83;      /* sub ecx, 16 */
+  comp_tbuffer[comp_tptr++] = 0x83;       /* sub ecx, 16 */
   comp_tbuffer[comp_tptr++] = 0xE9;
   comp_tbuffer[comp_tptr++] = 0x10;
 
-  comp_tbuffer[comp_tptr++] = 0xBF;      /* mov edi,nnnnnnnn */
-  comp_tbuffer[comp_tptr++] = imm.b[3];
-  comp_tbuffer[comp_tptr++] = imm.b[2];
-  comp_tbuffer[comp_tptr++] = imm.b[1];
-  comp_tbuffer[comp_tptr++] = imm.b[0];
+  comp_tbuffer[comp_tptr++] = 0xBF;       /* mov edi,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = loc.b[3];
+  comp_tbuffer[comp_tptr++] = loc.b[2];
+  comp_tbuffer[comp_tptr++] = loc.b[1];
+  comp_tbuffer[comp_tptr++] = loc.b[0];
 
   comp_tbuffer[comp_tptr++] = 0x39;     /* cmp eax, ebx*/
   comp_tbuffer[comp_tptr++] = 0xD8;
@@ -270,17 +278,17 @@ void comp_eq_jump (function trace)
 
 void comp_eq_jump (function trace)
 {
-  imm location; location.v = (imm) trace;
+  imm loc; loc.w = (int) trace;
 
-  comp_tbuffer[comp_tptr++] = 0x83;     /* sub ecx, 16 */
+  comp_tbuffer[comp_tptr++] = 0x83;       /* sub ecx, 16 */
   comp_tbuffer[comp_tptr++] = 0xE9;
   comp_tbuffer[comp_tptr++] = 0x10;
 
-  comp_tbuffer[comp_tptr++] = 0xBF;      /* mov edi,nnnnnnnn */
-  comp_tbuffer[comp_tptr++] = imm.b[3];
-  comp_tbuffer[comp_tptr++] = imm.b[2];
-  comp_tbuffer[comp_tptr++] = imm.b[1];
-  comp_tbuffer[comp_tptr++] = imm.b[0];
+  comp_tbuffer[comp_tptr++] = 0xBF;       /* mov edi,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = loc.b[3];
+  comp_tbuffer[comp_tptr++] = loc.b[2];
+  comp_tbuffer[comp_tptr++] = loc.b[1];
+  comp_tbuffer[comp_tptr++] = loc.b[0];
 
   comp_tbuffer[comp_tptr++] = 0x39;     /* cmp eax, ebx*/
   comp_tbuffer[comp_tptr++] = 0xD8;

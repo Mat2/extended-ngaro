@@ -9,6 +9,7 @@
  * Released into the public domain
  ******************************************************/
 
+/*
 #ifdef X86_64
   #include "arch/x86-64/primitives.h"
 #elsif X86_32
@@ -20,9 +21,12 @@
 #elsif ARM
   #include "arch/arm-7/primitives.h"
 #endif
+*/
 
 #include <sys/mman.h>
 #include "compiler.h"
+#include "arch/x86-32/primitives.h"
+
 
 /* compiler initialisation */
 
@@ -30,7 +34,7 @@ void comp_init (int tracemem)
 {
   /* allocate memory for trace and execution buffers */
 
-  byte *tmem = (byte) valloc (tracemem);
+  uint8 *tmem = (uint8*) valloc (tracemem);
   if (tmem == NULL) { printf ("NGARO: E1\n"); exit (-1); }
 
   function cmem = (function) valloc (tracemem);
@@ -60,18 +64,11 @@ void comp_init (int tracemem)
 
 /* update binary buffer */
 
-int comp_flush (void);
+int comp_flush (void)
 {
-  int clen = comp_cofs - comp_cptr;
-  int cbuf = comp_cbuffer + comp_cptr;
-  int tbuf  = comp_tbuffer + comp_tptr;
-
-  if (cbuf > comp_clen) { printf ("NGARO: E3\n"); exit (-1); }
-
-  memcpy ((void*) cbuf, (int) clen, (void*) tbuf);
-
+  memcpy ((uint8*) (comp_cbuffer + comp_cofs), (uint8*) comp_tbuffer, comp_tptr);
   comp_tptr = 0;
-  comp_cptr = cbuf + clen;
+  comp_cofs = comp_cofs + comp_tptr;
 }
 
 /* call trace */

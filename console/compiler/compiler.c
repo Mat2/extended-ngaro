@@ -61,11 +61,11 @@ void comp_init (int tracemem)
 {
   /* allocate memory for trace and execution buffers */
 
-  comp_tbuffer = (uint8*) valloc (tracemem);
-  if (comp_tbuffer == NULL) { printf ("NGARO: E1\n"); exit (-1); }
+  comp_tbuffer = (uint8*) malloc (tracemem);
+  if (comp_tbuffer == NULL) { printf ("comp_init: E1\n"); exit (-1); }
 
-  comp_cbuffer = (function) valloc (tracemem);
-  if (comp_cbuffer == NULL) { printf ("NGARO: E2\n"); exit (-1); }
+  comp_cbuffer = (function) malloc (tracemem);
+  if (comp_cbuffer == NULL) { printf ("comp_init: E2\n"); exit (-1); }
 
   /* and for the private stacks */
 
@@ -85,8 +85,13 @@ void comp_init (int tracemem)
 
 /* update binary buffer */
 
+#define COMPILE comp_flush ();
+#define compile comp_flush ();
+
 int comp_flush (void)
 {
+  if (comp_cofs > comp_clen) { printf ("comp_flush: E3\n"); exit (-1); }
+
   memcpy ((uint8*) (comp_cbuffer + comp_cofs),(uint8*) comp_tbuffer, comp_tptr);
   comp_cofs = comp_cofs + comp_tptr;
   comp_tptr = 0;
@@ -94,16 +99,21 @@ int comp_flush (void)
 
 /* call trace */
 
-int comp_execute (int trace, VM *vm)
+#define EXECUTE(t,a,b) comp_execute (t,a,b);
+#define execute(t,a,b) comp_execute (t,a,b);
+
+int comp_execute (int trace, int a, int b)
 {
+  int erg;
+
   /* define accumulator and operand register */
 
   COMP_REGISTER
 
-  /* copy the first two stack elements into registers */
+  /* init accumulators */
 
-  comp_acc = vm->data[vm->sp-1];
-  comp_opn = vm->data[vm->sp];
+  comp_acc = a;
+  comp_opn = b;
 
   /* init execution state and save C register allocation */
 
@@ -111,10 +121,22 @@ int comp_execute (int trace, VM *vm)
 
   /* call function (trace) */
 
-  vm->data[vm->sp] = (comp_cbuffer + trace) ();
+  erg = (comp_cbuffer + trace) ();
 
   /* restore C specific register allocation */
 
   COMP_EPILOG
+
+  return erg;
+}
+
+/* compile return and flush stream buffer */
+
+#define RETC comp_returnc ();
+#define retc comp_returnc ();
+
+void comp_returnc (void)
+{
+  RET COMPILE
 }
 

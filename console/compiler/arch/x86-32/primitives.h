@@ -42,26 +42,32 @@
  *      D - data stack      EDI
  *      R - address stack   ESI
  *
- *      ECX, EDX - scratch (as EDX is only used by DIVx primitives this 
- *                          register is not saved in PROLOG, ECX don't need
- *                          to be saved)
+ * Non accessible registers:
+ *
+ *      S - scratch         ECX
+ *      F - flags           EFL
  ******************************************************************************/
 
-#define COMP_REGISTER register int comp_acc asm("eax"); \
-                      register int comp_opn asm("ebx");
-
-#define COMP_PROLOG asm volatile ("push %ebx");              \
-                    asm volatile ("push %edi");              \
-                    asm volatile ("push %esi");              \
-                    asm volatile ("mov  comp_dstack, %edi"); \
-                    asm volatile ("mov  comp_rstack, %esi");
+#define COMP_PROLOG asm volatile ("push %ebx");               \
+                    asm volatile ("push %edi");               \
+                    asm volatile ("push %esi");               \
+                    asm volatile ("mov  comp_dstack,  %edi"); \
+                    asm volatile ("mov  comp_rstack,  %esi"); \
+                    asm volatile ("mov  comp_a,       %eax"); \
+                    asm volatile ("mov  comp_b,       %ebx"); \
+                    asm volatile ("mov  comp_adr,     %ecx"); \
+                    asm volatile ("call *%ecx");
 
 #define COMP_EPILOG asm volatile ("pop %esi"); \
                     asm volatile ("pop %edi"); \
-                    asm volatile ("pop %ebx"); \
+                    asm volatile ("pop %ebx");
 
 #define LABEL comp_Label ();
 #define label comp_Label ();
+
+#define TAIL comp_cofs
+#define tail comp_cofs
+
 
 int comp_Label (void) { return comp_cofs; }
 
@@ -72,6 +78,7 @@ void comp_immediate (imm value)
   comp_tbuffer[comp_tptr++] = value.b[2];
   comp_tbuffer[comp_tptr++] = value.b[3];
 }
+
 
 /* primitives which accesses accumulator A */
 
@@ -191,7 +198,7 @@ void comp_tad (void)
 }
 
 #define TAR comp_tar ();
-#define taR comp_tar ();
+#define tar comp_tar ();
 
 void comp_tar (void)
 {
@@ -414,6 +421,7 @@ void comp_stra (void)
   comp_tbuffer[comp_tptr++] = 0x89;      
   comp_tbuffer[comp_tptr++] = 0x03;      
 }
+
 
 /* primitives which accesses accumulator B */
 
@@ -642,6 +650,16 @@ void comp_xorb (void)
   comp_tbuffer[comp_tptr++] = 0xC3;      
 }
 
+#define CMPB comp_cmpb ();
+#define cmpb comp_cmpb ();
+
+void comp_cmpb (void)
+{
+  /* cmp ebx, eax */
+  comp_tbuffer[comp_tptr++] = 0x39;      
+  comp_tbuffer[comp_tptr++] = 0xC3;      
+}
+
 #define SHLB comp_shlb ();
 #define shlb comp_shlb ();
 
@@ -728,7 +746,605 @@ void comp_strb (void)
   comp_tbuffer[comp_tptr++] = 0x18;      
 }
 
-/* common primitives */
+
+/* branch primitives */
+
+#define CI(t) comp_ci (t);
+#define ci(t) comp_ci (t);
+
+void comp_ci (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_ci: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* tail-call optimation */
+
+       /* mov ecx, trace */
+       comp_tbuffer[comp_tptr++] = 0xB9;
+       comp_immediate (val);      
+
+  if (trace == tail)
+  {
+       /* jmp ecx */
+       comp_tbuffer[comp_tptr++] = 0xFF;
+       comp_tbuffer[comp_tptr++] = 0xE1;
+  }
+  else
+  {
+       /* call ecx */
+       comp_tbuffer[comp_tptr++] = 0xFF;
+       comp_tbuffer[comp_tptr++] = 0xD1;
+  }
+}
+
+#define CIEQ(t) comp_cieq (t);
+#define cieq(t) comp_cieq (t);
+
+void comp_cieq (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_cieq: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: jne ntaken */
+  comp_tbuffer[comp_tptr++] = 0x75;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        call ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xD1;
+
+  /* ntaken: */
+}
+
+#define CIGR(t) comp_cigr (t);
+#define cigr(t) comp_cigr (t);
+
+void comp_cigr (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_cigr: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: jng ntaken */
+  comp_tbuffer[comp_tptr++] = 0x7E;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        call ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xD1;
+
+  /* ntaken: */
+}
+
+#define CILE(t) comp_cile (t);
+#define cile(t) comp_cile (t);
+
+void comp_cile (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_cile: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: jnl ntaken */
+  comp_tbuffer[comp_tptr++] = 0x7D;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        call ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xD1;
+
+  /* ntaken: */
+}
+
+#define CNZA(t) comp_cnza (t);
+#define cnza(t) comp_cnza (t);
+
+void comp_cnza (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_cnza: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: cmp al, 0 */
+  comp_tbuffer[comp_tptr++] = 0x3C;
+  comp_tbuffer[comp_tptr++] = 0x00;
+
+  /*        je ntaken */
+  comp_tbuffer[comp_tptr++] = 0x74;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        call ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xD1;
+
+  /* ntaken: */
+}
+
+#define CIZA(t) comp_ciza (t);
+#define ciza(t) comp_ciza (t);
+
+void comp_ciza (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_ciza: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: cmp al, 0 */
+  comp_tbuffer[comp_tptr++] = 0x3C;
+  comp_tbuffer[comp_tptr++] = 0x00;
+
+  /*        jne ntaken */
+  comp_tbuffer[comp_tptr++] = 0x75;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        call ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xD1;
+
+  /* ntaken: */
+}
+
+#define CNZB(t) comp_cnzb (t);
+#define cnzb(t) comp_cnzb (t);
+
+void comp_cnzb (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_cnzb: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: cmp bl, 0 */
+  comp_tbuffer[comp_tptr++] = 0x80;
+  comp_tbuffer[comp_tptr++] = 0xFB;
+  comp_tbuffer[comp_tptr++] = 0x00;
+
+  /*        je ntaken */
+  comp_tbuffer[comp_tptr++] = 0x74;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        call ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xD1;
+
+  /* ntaken: */
+}
+
+#define CIZB(t) comp_cizb (t);
+#define cizb(t) comp_cizb (t);
+
+void comp_cizb (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_cizb: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: cmp bl, 0 */
+  comp_tbuffer[comp_tptr++] = 0x80;
+  comp_tbuffer[comp_tptr++] = 0xFB;
+  comp_tbuffer[comp_tptr++] = 0x00;
+
+  /*        jne ntaken */
+  comp_tbuffer[comp_tptr++] = 0x75;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        call ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xD1;
+
+  /* ntaken: */
+}
+
+#define CRA comp_cra ();
+#define cra comp_cra ();
+
+void comp_cra (void)
+{
+  imm val; val.w = (int) comp_cbuffer;
+
+  /* add eax, comp_cbuffer */
+  comp_tbuffer[comp_tptr++] = 0x05;
+  comp_immediate (val);
+
+  /* call eax */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xD0;
+}
+
+#define CRB comp_crb ();
+#define crb comp_crb ();
+
+void comp_crb (void)
+{
+  imm val; val.w = (int) comp_cbuffer;
+
+  /* add ebx, comp_cbuffer */
+  comp_tbuffer[comp_tptr++] = 0x81;
+  comp_tbuffer[comp_tptr++] = 0xC3;
+  comp_immediate (val);
+
+  /* call ebx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xD3;
+}
+
+#define BRA comp_bra ();
+#define bra comp_bra ();
+
+void comp_bra (void)
+{
+  imm val; val.w = (int) comp_cbuffer;
+
+  /* add eax, comp_cbuffer */
+  comp_tbuffer[comp_tptr++] = 0x05;
+  comp_immediate (val);
+
+  /* jmp eax */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xE0;
+}
+
+#define BRB comp_brb ();
+#define brb comp_brb ();
+
+void comp_brb (void)
+{
+  imm val; val.w = (int) comp_cbuffer;
+
+  /* add ebx, comp_cbuffer */
+  comp_tbuffer[comp_tptr++] = 0x81;
+  comp_tbuffer[comp_tptr++] = 0xC3;
+  comp_immediate (val);
+
+  /* jmp ebx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xE3;
+}
+
+#define BI(t) comp_bi (t);
+#define bi(t) comp_bi (t);
+
+void comp_bi (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_bi: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /* jmp ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xE1;
+}
+
+#define BIEQ(t) comp_bieq (t);
+#define bieq(t) comp_bieq (t);
+
+void comp_bieq (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_bieq: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: jne ntaken */
+  comp_tbuffer[comp_tptr++] = 0x75;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        jmp ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xE1;
+
+  /* ntaken: */
+}
+
+#define BIGR(t) comp_bigr (t);
+#define bigr(t) comp_bigr (t);
+
+void comp_bigr (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_bigr: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: jng ntaken */
+  comp_tbuffer[comp_tptr++] = 0x7E;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        jmp ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xE1;
+
+  /* ntaken: */
+}
+
+#define BILE(t) comp_bile (t);
+#define bile(t) comp_bile (t);
+
+void comp_bile (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_bile: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: jnl ntaken */
+  comp_tbuffer[comp_tptr++] = 0x7D;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        jmp ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xE1;
+
+  /* ntaken: */
+}
+
+#define BNZA(t) comp_bnza (t);
+#define bnza(t) comp_bnza (t);
+
+void comp_bnza (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_bnza: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: cmp al, 0 */
+  comp_tbuffer[comp_tptr++] = 0x3C;
+  comp_tbuffer[comp_tptr++] = 0x00;
+
+  /*        je ntaken */
+  comp_tbuffer[comp_tptr++] = 0x74;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        jmp ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xE1;
+
+  /* ntaken: */
+}
+
+#define BIZA(t) comp_biza (t);
+#define biza(t) comp_biza (t);
+
+void comp_biza (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_biza: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: cmp al, 0 */
+  comp_tbuffer[comp_tptr++] = 0x3C;
+  comp_tbuffer[comp_tptr++] = 0x00;
+
+  /*        jne ntaken */
+  comp_tbuffer[comp_tptr++] = 0x75;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        jmp ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xE1;
+
+  /* ntaken: */
+}
+
+#define BNZB(t) comp_bnzb (t);
+#define bnzb(t) comp_bnzb (t);
+
+void comp_bnzb (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_bnzb: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: cmp bl, 0 */
+  comp_tbuffer[comp_tptr++] = 0x80;
+  comp_tbuffer[comp_tptr++] = 0xFB;
+  comp_tbuffer[comp_tptr++] = 0x00;
+
+  /*        je ntaken */
+  comp_tbuffer[comp_tptr++] = 0x74;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        jmp ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xE1;
+
+  /* ntaken: */
+}
+
+#define BIZB(t) comp_bizb (t);
+#define bizb(t) comp_bizb (t);
+
+void comp_bizb (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_bizb: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: cmp bl, 0 */
+  comp_tbuffer[comp_tptr++] = 0x80;
+  comp_tbuffer[comp_tptr++] = 0xFB;
+  comp_tbuffer[comp_tptr++] = 0x00;
+
+  /*        jne ntaken */
+  comp_tbuffer[comp_tptr++] = 0x75;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        jmp ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xE1;
+
+  /* ntaken: */
+}
 
 #define RET comp_return ();
 #define ret comp_return ();
@@ -737,6 +1353,8 @@ void comp_return (void)
 {
   comp_tbuffer[comp_tptr++] = 0xC3;
 }
+
+/* common primitives */
 
 #define SWAP comp_swap ();
 #define swap comp_swap ();

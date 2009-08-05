@@ -14,7 +14,7 @@
 
 #include "functions.h"
 #include "vm.h"
-
+#include "compiler.c"
 
 /******************************************************
  * Initialize the VM
@@ -35,18 +35,35 @@ void init_vm(VM *vm)
       vm->image[a] = 0;
    for (a = 0; a < 1024; a++)
       vm->ports[a] = 0;
+
+   comp_init (COMP_BUFFER);
 }
 
 
 /******************************************************
- * Process the current opcode
+ * Process the entire vm-code image
  ******************************************************/
+
 void vm_process(VM *vm)
 {
+  /* register cache */
+
   register int a, b;
   register int acc;
 
+  /* this is a common stream for compiling trace returns on a = 0
+     (see compilation of opcode: 25) */
+
+  int cVM_ZERO_TAKEN = label
+                       tba
+                       pldb                                     
+                       retc
+ 
+  /* start interpreter loop */
+
   NEXT;
+
+  /* interpreter primitives */
 
      				/***************************************************/
     				/* NOP    Does Nothing. Used for padding           */
@@ -65,7 +82,7 @@ void vm_process(VM *vm)
            vm->ip++;
            TOS = acc;
            acc = VMOP;
-	   vm->ip++;
+	       vm->ip++;
            NEXT;
 
 			    	/***************************************************/
@@ -76,7 +93,7 @@ void vm_process(VM *vm)
 
   fVM_DUP: vm->sp++;
            vm->data[vm->sp] = acc;
-	   vm->ip++;
+	       vm->ip++;
            NEXT;
 
     				/***************************************************/
@@ -97,7 +114,7 @@ void vm_process(VM *vm)
   fVM_SWAP: a = TOS;
             TOS = acc;
             acc = a;
-	    vm->ip++; 
+	        vm->ip++; 
             NEXT;
  
     				/***************************************************/
@@ -111,7 +128,7 @@ void vm_process(VM *vm)
             TORS = acc;
             acc = vm->data[vm->sp];
             vm->sp--;
-	    vm->ip++;
+	        vm->ip++;
             NEXT;
 
     				/***************************************************/
@@ -119,13 +136,13 @@ void vm_process(VM *vm)
     				/*        stack to the data stack. Remove it from  */
     				/*        the address stack.                       */
     				/* Opcode: 6        Stack: -n       Address: n-    */
-   				/***************************************************/
+   				    /***************************************************/
 
   fVM_POP: vm->sp++;
            TOS = acc;
            acc = TORS;
            vm->rsp--;
-	   vm->ip++;
+	       vm->ip++;
            NEXT;
 
     				/***************************************************/
@@ -185,7 +202,7 @@ void vm_process(VM *vm)
     				/***************************************************/
 
    fVM_LT_JUMP: vm->ip++;
-         	if(TOS < acc)
+         	    if(TOS < acc)
                   vm->ip = VMOP;
                 else vm->ip++;
                 vm->sp--;
@@ -200,7 +217,7 @@ void vm_process(VM *vm)
     				/***************************************************/
 
    fVM_NE_JUMP: vm->ip++;
-         	if(acc != TOS)
+         	    if(acc != TOS)
                   vm->ip = VMOP;
                 else vm->ip++;
                 vm->sp--;
@@ -215,7 +232,7 @@ void vm_process(VM *vm)
     				/***************************************************/
 
    fVM_EQ_JUMP: vm->ip++;
-         	if(acc == TOS)
+         	    if(acc == TOS)
                   vm->ip = VMOP;
                 else vm->ip++;
                 vm->sp--;
@@ -229,7 +246,7 @@ void vm_process(VM *vm)
     				/***************************************************/
 
    fVM_FETCH: acc = vm->image[acc];
-	      vm->ip++;
+	          vm->ip++;
               NEXT;
 
     				/***************************************************/
@@ -241,7 +258,7 @@ void vm_process(VM *vm)
               vm->sp--;
               acc = vm->data[vm->sp];
               vm->sp--;
-	      vm->ip++;
+	          vm->ip++;
               NEXT;
 
     				/***************************************************/
@@ -256,14 +273,14 @@ void vm_process(VM *vm)
             NEXT;
 
     				/***************************************************/
-   			 	/* -      Subtract TOS from NOS, leaving the result*/
+   			 	    /* -      Subtract TOS from NOS, leaving the result*/
     				/* Opcode: 17        Stack: xy-z    Address: -     */
     				/***************************************************/
 
    fVM_SUB: TOS -= acc;
             acc = vm->data[vm->sp];
             vm->sp--;
-	    vm->ip++;
+	        vm->ip++;
             NEXT;
 
     				/***************************************************/
@@ -274,7 +291,7 @@ void vm_process(VM *vm)
    fVM_MUL: TOS *= acc;
             acc = vm->data[vm->sp];
             vm->sp--;
-	    vm->ip++;
+	        vm->ip++;
             NEXT;
 
     				/***************************************************/
@@ -287,7 +304,7 @@ void vm_process(VM *vm)
                b = TOS;
                acc = b / a;
                TOS = b % a;
-	       vm->ip++;
+	           vm->ip++;
                NEXT;
 
     				/***************************************************/
@@ -301,7 +318,7 @@ void vm_process(VM *vm)
             acc = vm->data[vm->sp];
             vm->sp--;
             acc = a & b;
-	    vm->ip++;
+	        vm->ip++;
             NEXT;
 
     				/***************************************************/
@@ -315,21 +332,21 @@ void vm_process(VM *vm)
            acc = vm->data[vm->sp];
            vm->sp--;
            acc = a | b;
-	   vm->ip++;
+	       vm->ip++;
            NEXT;
 
     				/***************************************************/
     				/* XOR    Perform a bitwise xor operation on TOS   */
     				/*        and NOS.                                 */
     				/* Opcode: 22        Stack: xy-z    Address: -     */
-   			 	/***************************************************/
+   			 	    /***************************************************/
 
    fVM_XOR: a = acc;
             b = TOS;
             acc = vm->data[vm->sp];
             vm->sp--;
             acc = a ^ b;
-	    vm->ip++;
+	        vm->ip++;
             NEXT;
 
 
@@ -343,7 +360,7 @@ void vm_process(VM *vm)
             acc = vm->data[vm->sp];
             vm->sp--;
             acc = b << a;
-	    vm->ip++;
+	        vm->ip++;
             NEXT;
 
     				/***************************************************/
@@ -356,7 +373,7 @@ void vm_process(VM *vm)
             acc = vm->data[vm->sp];
             vm->sp--;
             acc = b >>= a;
-	    vm->ip++;
+	        vm->ip++;
             NEXT;
 
     				/***************************************************/
@@ -368,14 +385,14 @@ void vm_process(VM *vm)
     				/***************************************************/
 
    fVM_ZERO_EXIT: if (acc == 0)
-         	  {
+         	      {
                     acc = vm->data[vm->sp];
                     vm->sp--;
-           	    vm->ip = (TORS+1);
-           	    vm->rsp--;
+           	        vm->ip = (TORS+1);
+           	        vm->rsp--;
                   }
-	          else vm->ip++;
-         	  NEXT;
+	              else vm->ip++;
+         	      NEXT;
 
     				/***************************************************/
     				/* 1+    Increase TOS by 1                         */
@@ -383,16 +400,16 @@ void vm_process(VM *vm)
     				/***************************************************/
 
    fVM_INC: acc += 1;
-	    vm->ip++;
+	        vm->ip++;
             NEXT;
 
     				/***************************************************/
     				/* 1-    Decrease TOS by 1                         */
-   				/* Opcode: 27        Stack: x-y     Address: -     */
+   				    /* Opcode: 27        Stack: x-y     Address: -     */
     				/***************************************************/
 
    fVM_DEC: acc -= 1;
-	    vm->ip++;
+	        vm->ip++;
             NEXT;
 
     				/***************************************************/
@@ -403,7 +420,7 @@ void vm_process(VM *vm)
    fVM_IN: a = acc;
            acc = vm->ports[a];
            vm->ports[a] = 0;
-	   vm->ip++;
+	       vm->ip++;
            NEXT;
 
     				/***************************************************/
@@ -417,7 +434,7 @@ void vm_process(VM *vm)
             vm->sp--;
             acc = vm->data[vm->sp];
             vm->sp--;
-	    vm->ip++;
+	        vm->ip++;
             NEXT;
 
     				/***************************************************/
@@ -483,8 +500,406 @@ void vm_process(VM *vm)
                vm->ports[5] = vm->rsp;
                vm->ports[0] = 1;
              }
-	     vm->ip++;
+	         vm->ip++;
              NEXT;
 
-   DEFAULT:  vm->ip = IMAGE_SIZE;
+   /* compiler routines */
+
+                    /***************************************************
+                     * compiler routines:                              *
+                     *                                                 *
+                     *         a : first accululator,                  *
+                     *         b : second accumulator,                 *
+                     *         d : current data-stack pointer          *
+                     *         r : current return-stack pointer        *
+                     *                                                 *
+                     *         p : internal program counter            *
+                     *         s : internal return-address stack       *
+                     *         f : internal flag register              *
+                     *                                                 *
+                     * (s+), (r+), (d+) : store register onto TOS and  *
+                     *                    post increment pointer       *
+                     * (-s), (-r), (-d) : decrement pointer and load   *
+                     *                    TOS into register            *
+                     *                                                 *
+                     *          <, >, = : conditional execution        *
+                     *                c : test condition               *
+                     *                m : memory access                *
+                     *                                                 *
+                     *             VMOP : immediate parameter          *
+                     ***************************************************/
+
+   cVM_NOP:     CNEXT;
+
+   cVM_LIT:     psbd                                   /* (d+) = b    */ 
+                tab                                    /*    b = a    */
+                lia  (VMOP)                            /*    a = VMOP */
+                CNEXT;
+
+   cVM_DUP:     psbd                                   /* (d+) = b    */  
+                tab                                    /*    b = a    */
+                CNEXT;
+
+   cVM_DROP:    tba                                    /*    a = b    */
+                pldb                                   /*    b = (-d) */
+                CNEXT;
+
+   cVM_SWAP:    swap                                   /*    a <-> b */
+                CNEXT;
+
+
+   cVM_PUSH:    psar                                   /* (r+) = a    */ 
+                tba                                    /*    a = b    */
+                pldb                                   /*    b = (-d) */
+                CNEXT;
+
+   cVM_POP:     psbd                                   /* (d+) = b    */ 
+                tab                                    /*    b = a    */
+                plra                                   /*    a = (-r) */
+                CNEXT;
+
+   cVM_CALL:    vm->ip++;
+                ci   (VMOP)                            /* (s+) = p    */
+                CNEXT;                                 /*    p = VMOP */
+
+   cVM_JUMP:    vm->ip++;
+                bi   (VMOP)                            /*    p = VMOP */
+                CNEXT;
+
+   cVM_RETURN:  ret                                    /*    p = (-s) */
+                NEXT;
+
+   cVM_GT_JUMP: vm->ip++;
+                cmpa                                   /*       f = c.a  */
+                plda                                   /*       a = (-d) */
+                pldb                                   /*       b = (-d) */ 
+                bigr (VMOP)                            /* f.> : p = VMOP */
+                CNEXT;                                    
+
+   cVM_LT_JUMP: vm->ip++;
+                cmpa                                   /*       f = c.a  */
+                plda                                   /*       a = (-d) */
+                pldb                                   /*       b = (-d) */ 
+                bile (VMOP)                            /* f.< : p = VMOP */
+                CNEXT;                                    
+
+   cVM_NE_JUMP: vm->ip++;
+                cmpa                                   /*       f = c.a  */
+                plda                                   /*       a = (-d) */
+                pldb                                   /*       b = (-d) */ 
+                bigr (VMOP)                            /* f.> : p = VMOP */
+                bile (VMOP)                            /* f.< : p = VMOP */
+                CNEXT;                                    
+
+   cVM_EQ_JUMP: vm->ip++;
+                cmpa                                   /*       f = c.a  */
+                plda                                   /*       a = (-d) */
+                pldb                                   /*       b = (-d) */ 
+                bieq (VMOP)                            /* f.= : p = VMOP */
+                CNEXT;                                    
+
+   cVM_FETCH:   psbd                                   /* (d+) = b    */  
+                tab                                    /*    b = a    */
+                ldra                                   /*    a = m.b  */
+                pldb                                   /*    b = (-d) */
+                CNEXT;
+
+   cVM_STORE:   stra                                   /*  m.b = a    */
+                plda                                   /*    a = (-d) */
+                pldb                                   /*    b = (-d) */
+                CNEXT;
+
+   cVM_ADD:     adda                                   /*    a = a + b */
+                pldb                                   /*    b = (-d)  */
+                CNEXT;
+
+   cVM_SUB:     suba                                   /*    a = a - b */
+                pldb                                   /*    b = (-d)  */
+                CNEXT;
+
+   cVM_MUL:     mula                                   /*    a = a * b */
+                pldb                                   /*    b = (-d)  */
+                CNEXT;
+
+   cVM_DIVMOD:  diva                                   /*    a = a / b */
+                lib  (0)                               /*    b = 0     */
+                CNEXT;
+
+   cVM_AND:     anda                                   /*    a = a & b */
+                pldb                                   /*    b = (-d)  */
+                CNEXT;
+
+   cVM_OR:      gora                                   /*    a = a | b */
+                pldb                                   /*    b = (-d)  */
+                CNEXT;
+
+   cVM_XOR:     xora                                   /*    a = a ^ b */
+                pldb                                   /*    b = (-d)  */
+                CNEXT;
+
+   cVM_SHL:     shla                                   /*    a = a << b */
+                pldb                                   /*    b = (-d)   */
+                CNEXT;
+ 
+   cVM_SHR:     shra                                   /*    a = a >> b */
+                pldb                                   /*    b = (-d)   */
+                CNEXT;
+
+   cVM_INC:     inca                                   /*    a = a + 1 */
+                CNEXT;
+
+   cVM_DEC:     deca                                   /*    a = a - 1 */
+                CNEXT;
+
+   cVM_ZERO_EXIT: biza (cVM_ZERO_TAKEN)                /*  a=0 : p = cVM.. */                 
+                  CNEXT;
+
+   cVM_IN:      printf ("cVM_IN: illegal stream opcode !\n");
+                exit (-1);
+
+   cVM_OUT:     printf ("cVM_OUT: illegal stream opcode !\n");
+                exit (-1);
+
+   cVM_WAIT:    printf ("cVM_WAIT: illegal stream opcode !\n");
+                exit (-1);
+
+   /* compiler routines for the extended-instruction set */
+
+   cVM_LIA:     vm->ip++;
+                lia (VMOP)                             /*    a = VMOP */
+                CNEXT;
+
+   cVM_PSAD:    psad                                   /* (d+) = a    */
+                CNEXT;
+
+   cVM_PSAR:    psar                                   /* (r+) = a    */
+                CNEXT;
+
+   cVM_PLDA:    plda                                   /*    a = (-d) */
+                CNEXT;
+
+   cVM_PLRA:    plra                                   /*    a = (-r) */
+                CNEXT;
+
+   cVM_TDA:     tda                                    /*    a = d    */
+                CNEXT;
+
+   cVM_TRA:     tra                                    /*    a = r    */
+                CNEXT;
+
+   cVM_TAD:     tad                                    /*    d = a    */
+                CNEXT;
+
+   cVM_TAR:     tar                                    /*    r = a    */
+                CNEXT;
+
+   cVM_TAB:     tab                                    /*    b = a    */
+                CNEXT;
+
+   cVM_TBA:     tba                                    /*    a = b    */
+                CNEXT;
+
+   cVM_ADDA:    adda                                   /*    a = a + b */
+                CNEXT;
+
+   cVM_SUBA:    suba                                   /*    a = a - b */
+                CNEXT;
+
+   cVM_DIVA:    diva                                   /*    a = a / b */
+                CNEXT;
+
+   cVM_MULA:    mula                                   /*    a = a * b */
+                CNEXT;
+
+   cVM_INCA:    inca                                   /*    a = a + 1 */
+                CNEXT;
+
+   cVM_DECA:    deca                                   /*    a = a - 1 */
+                CNEXT;
+
+   cVM_ANDA:    anda                                   /*    a = a & b */
+                CNEXT;
+
+   cVM_GORA:    gora                                   /*    a = a | b */
+                CNEXT;
+
+   cVM_XORA:    xora                                   /*    a = a ^ b */
+                CNEXT;
+
+   cVM_SHLA:    shla                                   /*    a = a << b */
+                CNEXT;
+
+   cVM_SHRA:    shra                                   /*    a = a >> b */
+                CNEXT;
+
+   cVM_SLIA:    vm->ip++;
+                slia (VMOP)                            /*    a = a << VMOP */
+                CNEXT;
+
+   cVM_SRIA:    vm->ip++;
+                sria (VMOP)                            /*    a = a >> VMOP */
+                CNEXT;
+
+   cVM_CMPA:    cmpa                                   /*    f = c.a    */
+                CNEXT;
+
+   cVM_LDRA:    ldra                                   /*    a = m.b    */
+                CNEXT;
+
+   cVM_STRA:    stra                                   /*  m.b = a      */
+                CNEXT;
+
+   cVM_LIB:     vm->ip++;
+                lib  (VMOP)                            /*    b = VMOP   */
+                CNEXT;
+
+   cVM_PSBD:    psbd                                   /* (d+) = b      */
+                CNEXT;
+
+   cVM_PSBR:    psbr                                   /* (r+) = b      */
+                CNEXT;
+
+   cVM_PLDB:    pldb                                   /*    b = (-d)   */
+                CNEXT;
+
+   cVM_PLRB:    plrb                                   /*    b = (-r)   */
+                CNEXT;
+
+   cVM_TDB:     tdb                                    /*    b = d      */
+                CNEXT;
+
+   cVM_TRB:     trb                                    /*    b = r      */
+                CNEXT;
+
+   cVM_ADDB:    addb                                   /*    b = b + a  */
+                CNEXT;
+
+   cVM_SUBB:    subb                                   /*    b = b - a  */
+                CNEXT;
+
+   cVM_DIVB:    divb                                   /*    b = b / a  */
+                CNEXT;
+
+   cVM_MULB:    mulb                                   /*    b = b / a  */
+                CNEXT;
+
+   cVM_INCB:    incb                                   /*    b = b + 1  */
+                CNEXT;
+
+   cVM_DECB:    decb                                   /*    b = b - 1  */
+                CNEXT;
+
+   cVM_ANDB:    andb                                   /*    b = b & a  */
+                CNEXT;
+
+   cVM_GORB:    gorb                                   /*    b = b | a  */
+                CNEXT;
+
+   cVM_XORB:    xorb                                   /*    b = b ^ a  */
+                CNEXT;
+
+   cVM_CMPB:    cmpb                                   /*    f = c.b    */
+                CNEXT;
+
+   cVM_SHLB:    shlb                                   /*    b = b << a */
+                CNEXT;
+
+   cVM_SLIB:    vm->ip++;
+                slib (VMOP)                            /*    b = b << VMOP */
+                CNEXT;
+
+   cVM_SHRB:    shrb                                   /*    b = b >> a */
+                CNEXT;
+
+   cVM_SRIB:    vm->ip++;
+                srib (VMOP)                            /*    b = b >> VMOP */
+                CNEXT;
+
+   cVM_LDRB:    ldrb                                   /*    b = m.a   */
+                CNEXT;
+
+   cVM_STRB:    strb                                   /*  m.a = b     */
+                CNEXT;
+
+   cVM_CI:      vm->ip++;
+                ci   (VMOP)                            /* (s+) = p     */
+                CNEXT;                                 /*    p = VMOP  */
+
+   cVM_CIEQ:    vm->ip++;                              
+                cieq (VMOP)                            /*  f.= : (s+) = p    */
+                CNEXT;                                 /*           p = VMOP */
+
+   cVM_CIGR:    vm->ip++;                              
+                cigr (VMOP)                            /*  f.> : (s+) = p    */
+                CNEXT;                                 /*           p = VMOP */
+
+   cVM_CILE:    vm->ip++;                              
+                cile (VMOP)                            /*  f.< : (s+) = p    */
+                CNEXT;                                 /*           p = VMOP */
+
+   cVM_CNZA:    vm->ip++;                              /*           f = c.a  */
+                cnza (VMOP)                            /*  f.! : (s+) = p    */
+                CNEXT;                                 /*           p = VMOP */
+
+   cVM_CIZA:    vm->ip++;                              /*           f = c.a  */
+                ciza (VMOP)                            /*  f.0 : (s+) = p    */
+                CNEXT;                                 /*           p = VMOP */
+
+   cVM_CNZB:    vm->ip++;                              /*           f = c.b  */
+                cnzb (VMOP)                            /*  f.! : (s+) = p    */
+                CNEXT;                                 /*           p = VMOP */
+
+   cVM_CIZB:    vm->ip++;                              /*           f = c.b  */
+                cizb (VMOP)                            /*  f.0 : (s+) = p    */
+                CNEXT;                                 /*           p = VMOP */
+
+   cVM_CRA:     cra                                    /* (s+) = p     */
+                CNEXT;                                 /*    p = a     */
+
+   cVM_CRB:     crb                                    /* (s+) = p     */
+                CNEXT;                                 /*    p = b     */
+
+   cVM_BRA:     bra                                    /*    p = a     */
+                CNEXT;
+
+   cVM_BRB:     brb                                    /*    p = b     */
+                CNEXT;
+
+   cVM_BI:      vm->ip++;                              
+                bi   (VMOP)                            /*    p = VMOP  */
+                CNEXT;
+
+   cVM_BIEQ:    vm->ip++;                              /*        f = c.a   */
+                bieq (VMOP)                            /*  f.= : p = VMOP  */
+                CNEXT;
+
+   cVM_BIGR:    vm->ip++;                              /*        f = c.a   */
+                bigr (VMOP)                            /*  f.> : p = VMOP  */
+                CNEXT;
+
+   cVM_BILE:    vm->ip++;                              /*        f = c.a   */
+                bile (VMOP)                            /*  f.< : p = VMOP  */
+                CNEXT;
+
+   cVM_BNZA:    vm->ip++;                              /*        f = c.a   */
+                bnza (VMOP)                            /*  f.! : p = VMOP  */
+                CNEXT;
+
+   cVM_BIZA:    vm->ip++;                              /*        f = c.a   */
+                biza (VMOP)                            /*  f.= : p = VMOP  */
+                CNEXT;
+
+   cVM_BNZB:    vm->ip++;                              /*        f = c.b   */
+                bnzb (VMOP)                            /*  f.! : p = VMOP  */
+                CNEXT;
+
+   cVM_BIZB:    vm->ip++;                              /*        f = c.b   */
+                bizb (VMOP)                            /*  f.= : p = VMOP  */
+                CNEXT;
+
+   cVM_DEFAULT: printf ("Illegal opcode in stream detected !\n");
+                exit (-1); 
+   
+   fVM_DEFAULT: vm->ip = IMAGE_SIZE;
 }
+

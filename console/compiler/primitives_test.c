@@ -242,7 +242,128 @@ int main (int argc, char **argv)
                    tba
                    retc
 
-    /* test traces */
+    int SWAP_test = label
+                    lia      (20)
+                    lib      (100)
+                    swap
+                    retc
+
+    int CI_test = label
+                  ci         (TAB_test)
+                  retc
+
+    int CRA_test = label
+                   lia       (LDRB_test)
+                   cra
+                   retc
+
+    int CRB_test = label
+                   lib       (LDRB_test)
+                   crb
+                   retc
+
+    int CIEQ_test = label
+                    lia      (3)
+                    lib      (3) 
+                    cmpa     cieq (LIB_test)
+                    retc
+
+    int CIGR_test = label
+                    lia      (10)
+                    lib      (5) 
+                    cmpa     cigr (LIB_test)
+                    retc
+
+    int CILE_test = label
+                    lia      (5)
+                    lib      (10) 
+                    cmpa     cile (LIB_test)
+                    retc
+
+    int CNZA_test = label
+                    lia      (5) 
+                    cnza     (LIB_test)
+                    retc
+
+    int CIZA_test = label
+                    lia      (0) 
+                    ciza     (LIB_test)
+                    retc
+
+    int CNZB_test = label
+                    lib      (5) 
+                    cnzb     (LIB_test)
+                    retc
+
+    int CIZB_test = label
+                    lib      (0) 
+                    cizb     (LIB_test)
+                    retc
+
+    int BI_test = label
+                  bi         (TAB_test)
+                  retc
+
+    int BRA_test = label
+                   lia       (LDRB_test)
+                   bra
+                   retc
+
+    int BRB_test = label
+                   lib       (LDRB_test)
+                   brb
+                   retc
+
+    int BIEQ_test = label
+                    lia      (3)
+                    lib      (3) 
+                    cmpa     bieq (LIB_test)
+                    retc
+
+    int BIGR_test = label
+                    lia      (10)
+                    lib      (5) 
+                    cmpa     bigr (LIB_test)
+                    retc
+
+    int BILE_test = label
+                    lia      (5)
+                    lib      (10) 
+                    cmpa     bile (LIB_test)
+                    retc
+
+    int BNZA_test = label
+                    lia      (5) 
+                    bnza     (LIB_test)
+                    retc
+
+    int BIZA_test = label
+                    lia      (0) 
+                    biza     (LIB_test)
+                    retc
+
+    int BNZB_test = label
+                    lib      (5) 
+                    bnzb     (LIB_test)
+                    retc
+
+    int BIZB_test = label
+                    lib      (0) 
+                    bizb     (LIB_test)
+                    retc
+
+    int TAIB_test = label
+                    inca
+                    cmpa     bile (tail)
+                    retc
+
+    int TAIA_test = label
+                    lia      (0)
+                    lib      (100)
+                    ci       (TAIB_test)
+                    retc
+
+    /* generated-traces test */
 
     int erg = 0;
 
@@ -360,6 +481,9 @@ int main (int argc, char **argv)
     erg = execute (SRIB_test,0, 0); 
           printf ("SRIB: %i		| ", erg); 
           printf ("1\n");
+    erg = execute (SWAP_test,0, 0); 
+          printf ("SWAP: %i	| ", erg); 
+          printf ("100\n");
 
     /* load and store primitives */
 
@@ -379,11 +503,80 @@ int main (int argc, char **argv)
           printf ("LDRB: %i	| ", erg); 
           printf ("10\n");
 
+    /* branch and call isntructions */
+
+    printf ("\n    - branch and call instructions:\n\n");
+    printf ("      result	| should be\n");
+
+    erg = execute (CI_test,0, 0); 
+          printf ("CI:   %i	| ", erg); 
+          printf ("20\n");
+    erg = execute (CRA_test,0, 0); 
+          printf ("CRA:  %i	| ", erg); 
+          printf ("10\n");
+    erg = execute (CRB_test,0, 0); 
+          printf ("CRB:  %i	| ", erg); 
+          printf ("10\n");
+    erg = execute (CIEQ_test,0, 0); 
+          printf ("CIEQ: %i	| ", erg); 
+          printf ("1024\n");
+    erg = execute (CIGR_test,0, 0); 
+          printf ("CIGR: %i	| ", erg); 
+          printf ("1024\n");
+    erg = execute (CILE_test,0, 0); 
+          printf ("CILE: %i	| ", erg); 
+          printf ("1024\n");
+    erg = execute (CNZA_test,0, 0); 
+          printf ("CNZA: %i	| ", erg); 
+          printf ("1024\n");
+    erg = execute (CIZA_test,0, 0); 
+          printf ("CIZA: %i	| ", erg); 
+          printf ("1024\n");
+    erg = execute (CNZB_test,0, 0); 
+          printf ("CNZB: %i	| ", erg); 
+          printf ("1024\n");
+    erg = execute (CIZB_test,0, 0); 
+          printf ("CIZB: %i	| ", erg); 
+          printf ("1024\n");
+    erg = execute (BI_test,0, 0); 
+          printf ("BI:   %i	| ", erg); 
+          printf ("20\n");
+    erg = execute (BRA_test,0, 0); 
+          printf ("BRA:  %i	| ", erg); 
+          printf ("10\n");
+    erg = execute (BRB_test,0, 0); 
+          printf ("BRB:  %i	| ", erg); 
+          printf ("10\n");
+    erg = execute (BIEQ_test,0, 0); 
+          printf ("BIEQ: %i	| ", erg); 
+          printf ("1024\n");
+    erg = execute (BIGR_test,0, 0); 
+          printf ("BIGR: %i	| ", erg); 
+          printf ("1024\n");
+    erg = execute (BILE_test,0, 0); 
+          printf ("BILE: %i	| ", erg); 
+          printf ("1024\n");
+    erg = execute (BNZA_test,0, 0); 
+          printf ("BNZA: %i	| ", erg); 
+          printf ("1024\n");
+    erg = execute (BIZA_test,0, 0); 
+          printf ("BIZA: %i	| ", erg); 
+          printf ("1024\n");
+    erg = execute (BNZB_test,0, 0); 
+          printf ("BNZB: %i	| ", erg); 
+          printf ("1024\n");
+    erg = execute (BIZB_test,0, 0); 
+          printf ("BIZB: %i	| ", erg); 
+          printf ("1024\n");
+
     /* are PROLOG and EPILOG correct ? */
 
     printf ("\n    - Correct compiler call-frame implementation:\n\n");
     printf ("      result	| should be\n");
 
+    erg = execute (TAIB_test,0, 100);  
+    printf ("TAIL: %i	| ", erg);
+    printf ("100\n");
     erg = execute (STCK_test,0, 0);  
     printf ("STCK: %i 	| ", erg);
     printf ("!= 20\n");

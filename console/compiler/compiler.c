@@ -52,7 +52,7 @@
 
 #include <sys/mman.h>
 #include "compiler.h"
-#include "arch/x86-32/primitives.h"
+#include "primitives.h"
 
 
 /* compiler initialisation */
@@ -102,32 +102,24 @@ int comp_flush (void)
 #define EXECUTE(t,a,b) comp_execute (t,a,b);
 #define execute(t,a,b) comp_execute (t,a,b);
 
+int comp_a;
+int comp_b;
+
+function comp_adr;
+
 int comp_execute (int trace, int a, int b)
 {
-  int erg;
+  comp_a   = a; 
+  comp_b   = b;
+  comp_adr = comp_cbuffer + trace;
 
-  /* define accumulator and operand register */
-
-  COMP_REGISTER
-
-  /* init accumulators */
-
-  comp_acc = a;
-  comp_opn = b;
-
-  /* init execution state and save C register allocation */
+  /* init execution state, save C register allocation and call function */
 
   COMP_PROLOG
-
-  /* call function (trace) */
-
-  erg = (comp_cbuffer + trace) ();
 
   /* restore C specific register allocation */
 
   COMP_EPILOG
-
-  return erg;
 }
 
 /* compile return and flush stream buffer */

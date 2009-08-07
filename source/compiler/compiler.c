@@ -51,6 +51,7 @@
 */
 
 #include <sys/mman.h>
+#include <string.h>
 #include "compiler.h"
 #include "primitives.h"
 

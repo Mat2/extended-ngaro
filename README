@@ -1,30 +1,34 @@
-The extended ngaro vm is a very low-level but platform independent vm, 
-written in C. It evolved from ngaro (see retro forth 10) and is binary
+Extended Ngaro VM
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This is a very low-level, but platform independent, vm written
+in C. It evolved from Ngaro (see Retro Forth 10) and is binary
 compatible with it.
 
 It is uncommon mainly in tree aspects (when finished):
 
-* New instructions can be generated at runtime (which extend the instruction
-  set) from vm-code sequences.
+* New instructions can be generated at runtime (which extend
+  the instruction set) from vm-code sequences.
 
-* The vm encoding is extended though a native-code compiler with added 
-  support for stack, register and matrix operations. This way optimated 
-  machine code can be generated in a platform independent way.
+* The vm encoding is extended though a native-code compiler
+  with added support for stack, register and matrix operations.
+  This way optimized machine code can be generated in a
+  platform independent way.
 
-* It's a accumulator/store design with efficient interpretation in mind.
+* It's a accumulator/store design with efficient interpretation
+  in mind.
 
 Current status:
 
-The vm is usable but the compiler part isn't finished yet.
+* The vm is usable but the compiler part isn't finished yet.
 
 Compilation:
 
-Download the current ngaro sources and replace the console folder. Building
-is done without modifications (make vm).
+* "make"
 
 Remark:
 
-The replicated-switch threading method performs better on my Athlon64 3000x
-than the older indirect-token threading interpreter (see ngaro-fast) and results
-in an equal performance on Celeron M and possibly Atom based cpu's. So, for
-performance reasons use this vm !
+The replicated-switch threading method performs better on my
+Athlon64 3000x than the older indirect-token threading
+interpreter (see ngaro-fast [retro10.1]) and results in an
+equal performance on Celeron M and possibly Atom based cpu's.
+So, for performance reasons use this vm !

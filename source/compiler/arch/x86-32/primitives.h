@@ -48,6 +48,7 @@
  *      F - flags           EFL
  ******************************************************************************/
 
+#ifdef LINUX
 #define COMP_PROLOG asm volatile ("push %ebx");               \
                     asm volatile ("push %edi");               \
                     asm volatile ("push %esi");               \
@@ -61,6 +62,22 @@
 #define COMP_EPILOG asm volatile ("pop %esi"); \
                     asm volatile ("pop %edi"); \
                     asm volatile ("pop %ebx");
+#else
+#define COMP_PROLOG asm volatile ("push %ebx");               \
+                    asm volatile ("push %edi");               \
+                    asm volatile ("push %esi");               \
+                    asm volatile ("mov  _comp_dstack,  %edi"); \
+                    asm volatile ("mov  _comp_rstack,  %esi"); \
+                    asm volatile ("mov  _comp_a,       %eax"); \
+                    asm volatile ("mov  _comp_b,       %ebx"); \
+                    asm volatile ("mov  _comp_adr,     %ecx"); \
+                    asm volatile ("call *%ecx");
+
+#define COMP_EPILOG asm volatile ("pop %esi"); \
+                    asm volatile ("pop %edi"); \
+                    asm volatile ("pop %ebx");
+#endif
+
 
 #define LABEL comp_Label ();
 #define label comp_Label ();

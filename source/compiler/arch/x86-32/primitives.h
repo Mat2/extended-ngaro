@@ -48,7 +48,7 @@
  *      F - flags           EFL
  ******************************************************************************/
 
-#ifdef LINUX
+#ifdef __linux__
 #define COMP_PROLOG asm volatile ("push %ebx");               \
                     asm volatile ("push %edi");               \
                     asm volatile ("push %esi");               \

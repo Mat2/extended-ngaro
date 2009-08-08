@@ -19,7 +19,9 @@ It is uncommon mainly in tree aspects (when finished):
 
 Current status:
 
-* The vm is usable but the compiler part isn't finished yet.
+* The vm is usable and the compiler is finished but it's 
+  integration into the vm is at current untested so some tests
+  are needed to figure out possible bugs in the vm interface.
 
 Compilation:
 

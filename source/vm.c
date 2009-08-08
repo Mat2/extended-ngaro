@@ -503,6 +503,26 @@ void vm_process(VM *vm)
 	         vm->ip++;
              NEXT;
 
+    				/***************************************************/
+    				/* STREAM  Compile stream to trace.                */
+    				/* Opcode: 31        Stack: - a     Address: -     */
+    				/***************************************************/
+
+   fVM_STREAM: vm->sp++;
+               TOS = acc;
+               acc = comp_cofs;
+               CNEXT;
+
+    				/***************************************************/
+    				/* AOT  execute trace                              */
+    				/* Opcode: 32        Stack: a - i   Address: -     */
+    				/***************************************************/
+
+   fVM_AOT: a = vm->data[vm->sp-1];
+            b = vm->data[vm->sp-2];
+            acc = execute (acc, a, b)
+            NEXT;
+
    /* compiler routines */
 
                     /***************************************************

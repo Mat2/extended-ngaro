@@ -4,28 +4,34 @@ This is a very low-level, but platform independent, vm written
 in C. It evolved from Ngaro (see Retro Forth 10) and is binary
 compatible with it.
 
-It is uncommon mainly in tree aspects (when finished):
+It is uncommon mainly in tree aspects:
 
 * New instructions can be generated at runtime (which extend
   the instruction set) from vm-code sequences.
 
 * The vm encoding is extended though a native-code compiler
-  with added support for stack, register and matrix operations.
-  This way optimized machine code can be generated in a
-  platform independent way.
+  with added support for stack and register operations. This 
+  way optimized machine code can be generated in a platform 
+  independent way.
 
 * It's a accumulator/store design with efficient interpretation
   in mind.
 
 Current status:
 
-* The vm is usable and the compiler is finished but it's 
-  integration into the vm is at current untested so some work
-  is needed to figure out possible bugs in the vm interface.
+* The vm is usable and the compiler can be invoked from Ngaro
+  with opcode 31 (stream). Compiled traces are executable with
+  opcode 32 (aot).
 
 Compilation:
 
 * "make"
+
+To do:
+
+- Compiler back-ends for x86-64, ARM, PowerPC and TMS320C64x.
+- Assembler for the extended-instruction set.
+- Documentation: Ngaro ISA reference guide, Compiler Manual. 
 
 Remark:
 

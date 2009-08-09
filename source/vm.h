@@ -60,7 +60,7 @@ enum vm_opcode {VM_NOP, VM_LIT, VM_DUP, VM_DROP, VM_SWAP, VM_PUSH, VM_POP,
   			    {                                             \
     				case VM_NOP: 	   goto fVM_NOP;          \
     				case VM_LIT: 	   goto fVM_LIT;          \
-                                case VM_DUP: 	   goto fVM_DUP;          \
+					case VM_DUP: 	   goto fVM_DUP;          \
     				case VM_DROP: 	   goto fVM_DROP;         \
     				case VM_SWAP: 	   goto fVM_SWAP;         \
     				case VM_PUSH: 	   goto fVM_PUSH;         \
@@ -69,7 +69,7 @@ enum vm_opcode {VM_NOP, VM_LIT, VM_DUP, VM_DROP, VM_SWAP, VM_PUSH, VM_POP,
     				case VM_JUMP: 	   goto fVM_JUMP;         \
     				case VM_RETURN:    goto fVM_RETURN;       \
     				case VM_GT_JUMP:   goto fVM_GT_JUMP;      \
-                                case VM_LT_JUMP:   goto fVM_LT_JUMP;      \
+					case VM_LT_JUMP:   goto fVM_LT_JUMP;      \
     				case VM_NE_JUMP:   goto fVM_NE_JUMP;      \
     				case VM_EQ_JUMP:   goto fVM_EQ_JUMP;      \
     				case VM_FETCH: 	   goto fVM_FETCH;        \
@@ -89,8 +89,8 @@ enum vm_opcode {VM_NOP, VM_LIT, VM_DUP, VM_DROP, VM_SWAP, VM_PUSH, VM_POP,
     				case VM_IN: 	   goto fVM_IN;           \
     				case VM_OUT:	   goto fVM_OUT;          \
     				case VM_WAIT: 	   goto fVM_WAIT;         \
-                                case VM_STREAM:    goto fVM_STREAM;       \
-                                case VM_AOT:       goto fVM_AOT;          \
+					case VM_STREAM:    goto fVM_STREAM;       \
+					case VM_AOT:       goto fVM_AOT;          \
     				default:           goto fVM_DEFAULT;      \
   			    }
 
@@ -100,7 +100,7 @@ enum vm_opcode {VM_NOP, VM_LIT, VM_DUP, VM_DROP, VM_SWAP, VM_PUSH, VM_POP,
   			    {                                             \
     				case VM_NOP: 	   goto cVM_NOP;          \
     				case VM_LIT: 	   goto cVM_LIT;          \
-                                case VM_DUP: 	   goto cVM_DUP;          \
+					case VM_DUP: 	   goto cVM_DUP;          \
     				case VM_DROP: 	   goto cVM_DROP;         \
     				case VM_SWAP: 	   goto cVM_SWAP;         \
     				case VM_PUSH: 	   goto cVM_PUSH;         \
@@ -109,7 +109,7 @@ enum vm_opcode {VM_NOP, VM_LIT, VM_DUP, VM_DROP, VM_SWAP, VM_PUSH, VM_POP,
     				case VM_JUMP: 	   goto cVM_JUMP;         \
     				case VM_RETURN:    goto cVM_RETURN;       \
     				case VM_GT_JUMP:   goto cVM_GT_JUMP;      \
-                                case VM_LT_JUMP:   goto cVM_LT_JUMP;      \
+					case VM_LT_JUMP:   goto cVM_LT_JUMP;      \
     				case VM_NE_JUMP:   goto cVM_NE_JUMP;      \
     				case VM_EQ_JUMP:   goto cVM_EQ_JUMP;      \
     				case VM_FETCH: 	   goto cVM_FETCH;        \
@@ -129,76 +129,76 @@ enum vm_opcode {VM_NOP, VM_LIT, VM_DUP, VM_DROP, VM_SWAP, VM_PUSH, VM_POP,
     				case VM_IN: 	   goto cVM_IN;           \
     				case VM_OUT:	   goto cVM_OUT;          \
     				case VM_WAIT: 	   goto cVM_WAIT;         \
-				case VM_LIA:       goto cVM_LIA;          \
-				case VM_PSAD:      goto cVM_PSAD;         \
-				case VM_PSAR:      goto cVM_PSAR;         \
-				case VM_PLDA:      goto cVM_PLDA;         \
+					case VM_LIA:       goto cVM_LIA;          \
+					case VM_PSAD:      goto cVM_PSAD;         \
+					case VM_PSAR:      goto cVM_PSAR;         \
+					case VM_PLDA:      goto cVM_PLDA;         \
 			        case VM_PLRA:      goto cVM_PLRA;         \
-                                case VM_TDA:       goto cVM_TDA;          \
-				case VM_TRA:       goto cVM_TRA;          \
-				case VM_TAD:       goto cVM_TAD;          \
-				case VM_TAR:       goto cVM_TAR;          \
-				case VM_TAB:       goto cVM_TAB;          \
-		                case VM_TBA:       goto cVM_TBA;          \
-			 	case VM_ADDA:      goto cVM_ADDA;         \
+					case VM_TDA:       goto cVM_TDA;          \
+					case VM_TRA:       goto cVM_TRA;          \
+					case VM_TAD:       goto cVM_TAD;          \
+					case VM_TAR:       goto cVM_TAR;          \
+					case VM_TAB:       goto cVM_TAB;          \
+					case VM_TBA:       goto cVM_TBA;          \
+			 		case VM_ADDA:      goto cVM_ADDA;         \
 			        case VM_SUBA:      goto cVM_SUBA;         \
-				case VM_DIVA:      goto cVM_DIVA;         \
-				case VM_MULA:      goto cVM_MULA;         \
-				case VM_INCA:      goto cVM_INCA;         \
-				case VM_DECA:      goto cVM_DECA;         \
-				case VM_ANDA:      goto cVM_ANDA;         \
-				case VM_GORA:      goto cVM_GORA;         \
-				case VM_XORA:      goto cVM_XORA;         \
-				case VM_SHLA:      goto cVM_SHLA;         \
-				case VM_SLIA:      goto cVM_SLIA;         \
-				case VM_SHRA:      goto cVM_SHRA;         \
-				case VM_SRIA:      goto cVM_SRIA;         \
-				case VM_CMPA:      goto cVM_CMPA;         \
-				case VM_LDRA:      goto cVM_LDRA;         \
-				case VM_STRA:      goto cVM_STRA;         \
-				case VM_LIB:       goto cVM_LIB;          \
-				case VM_PSBD:      goto cVM_PSBD;         \
-				case VM_PSBR:      goto cVM_PSBR;         \
-				case VM_PLDB:      goto cVM_PLDB;         \
-				case VM_PLRB:      goto cVM_PLRB;         \
-				case VM_TDB:       goto cVM_TDB;          \
-				case VM_TRB:       goto cVM_TRB;          \
-				case VM_ADDB:      goto cVM_ADDB;         \
-				case VM_SUBB:      goto cVM_SUBB;         \
-				case VM_DIVB:      goto cVM_DIVB;         \
-				case VM_MULB:      goto cVM_MULB;         \
-				case VM_INCB:      goto cVM_INCB;         \
-				case VM_DECB:      goto cVM_DECB;         \
-				case VM_ANDB:      goto cVM_ANDB;         \
-				case VM_GORB:      goto cVM_GORB;         \
-				case VM_XORB:      goto cVM_XORB;         \
-				case VM_CMPB:      goto cVM_CMPB;         \
-				case VM_SHLB:      goto cVM_SHLB;         \
-				case VM_SLIB:      goto cVM_SLIB;         \
-				case VM_SHRB:      goto cVM_SHRB;         \
-				case VM_SRIB:      goto cVM_SRIB;         \
-				case VM_LDRB:      goto cVM_LDRB;         \
-				case VM_STRB:      goto cVM_STRB;         \
-				case VM_CI:        goto cVM_CI;           \
-				case VM_CIEQ:      goto cVM_CIEQ;         \
-				case VM_CIGR:      goto cVM_CIGR;         \
-				case VM_CILE:      goto cVM_CILE;         \
-				case VM_CNZA:      goto cVM_CNZA;         \
-				case VM_CIZA:      goto cVM_CIZA;         \
-				case VM_CNZB:      goto cVM_CNZB;         \
-				case VM_CIZB:      goto cVM_CIZB;         \
-				case VM_CRA:       goto cVM_CRA;          \
-				case VM_CRB:       goto cVM_CRB;          \
-				case VM_BRA:       goto cVM_BRA;          \
-				case VM_BRB:       goto cVM_BRB;          \
-				case VM_BI:        goto cVM_BI;           \
-				case VM_BIEQ:      goto cVM_BIEQ;         \
-				case VM_BIGR:      goto cVM_BIGR;         \
-				case VM_BILE:      goto cVM_BILE;         \
-				case VM_BNZA:      goto cVM_BNZA;         \
-				case VM_BIZA:      goto cVM_BIZA;         \
-				case VM_BNZB:      goto cVM_BNZB;         \
-				case VM_BIZB:      goto cVM_BIZB;         \
+					case VM_DIVA:      goto cVM_DIVA;         \
+					case VM_MULA:      goto cVM_MULA;         \
+					case VM_INCA:      goto cVM_INCA;         \
+					case VM_DECA:      goto cVM_DECA;         \
+					case VM_ANDA:      goto cVM_ANDA;         \
+					case VM_GORA:      goto cVM_GORA;         \
+					case VM_XORA:      goto cVM_XORA;         \
+					case VM_SHLA:      goto cVM_SHLA;         \
+					case VM_SLIA:      goto cVM_SLIA;         \
+					case VM_SHRA:      goto cVM_SHRA;         \
+					case VM_SRIA:      goto cVM_SRIA;         \
+					case VM_CMPA:      goto cVM_CMPA;         \
+					case VM_LDRA:      goto cVM_LDRA;         \
+					case VM_STRA:      goto cVM_STRA;         \
+					case VM_LIB:       goto cVM_LIB;          \
+					case VM_PSBD:      goto cVM_PSBD;         \
+					case VM_PSBR:      goto cVM_PSBR;         \
+					case VM_PLDB:      goto cVM_PLDB;         \
+					case VM_PLRB:      goto cVM_PLRB;         \
+					case VM_TDB:       goto cVM_TDB;          \
+					case VM_TRB:       goto cVM_TRB;          \
+					case VM_ADDB:      goto cVM_ADDB;         \
+					case VM_SUBB:      goto cVM_SUBB;         \
+					case VM_DIVB:      goto cVM_DIVB;         \
+					case VM_MULB:      goto cVM_MULB;         \
+					case VM_INCB:      goto cVM_INCB;         \
+					case VM_DECB:      goto cVM_DECB;         \
+					case VM_ANDB:      goto cVM_ANDB;         \
+					case VM_GORB:      goto cVM_GORB;         \
+					case VM_XORB:      goto cVM_XORB;         \
+					case VM_CMPB:      goto cVM_CMPB;         \
+					case VM_SHLB:      goto cVM_SHLB;         \
+					case VM_SLIB:      goto cVM_SLIB;         \
+					case VM_SHRB:      goto cVM_SHRB;         \
+					case VM_SRIB:      goto cVM_SRIB;         \
+					case VM_LDRB:      goto cVM_LDRB;         \
+					case VM_STRB:      goto cVM_STRB;         \
+					case VM_CI:        goto cVM_CI;           \
+					case VM_CIEQ:      goto cVM_CIEQ;         \
+					case VM_CIGR:      goto cVM_CIGR;         \
+					case VM_CILE:      goto cVM_CILE;         \
+					case VM_CNZA:      goto cVM_CNZA;         \
+					case VM_CIZA:      goto cVM_CIZA;         \
+					case VM_CNZB:      goto cVM_CNZB;         \
+					case VM_CIZB:      goto cVM_CIZB;         \
+					case VM_CRA:       goto cVM_CRA;          \
+					case VM_CRB:       goto cVM_CRB;          \
+					case VM_BRA:       goto cVM_BRA;          \
+					case VM_BRB:       goto cVM_BRB;          \
+					case VM_BI:        goto cVM_BI;           \
+					case VM_BIEQ:      goto cVM_BIEQ;         \
+					case VM_BIGR:      goto cVM_BIGR;         \
+					case VM_BILE:      goto cVM_BILE;         \
+					case VM_BNZA:      goto cVM_BNZA;         \
+					case VM_BIZA:      goto cVM_BIZA;         \
+					case VM_BNZB:      goto cVM_BNZB;         \
+					case VM_BIZB:      goto cVM_BIZB;         \
     				default:           goto cVM_DEFAULT;      \
   			    }
 #define CNEXT   vm->ip++; INEXT

@@ -515,11 +515,13 @@ void vm_process(VM *vm)
 
     				/***************************************************/
     				/* AOT  execute trace                              */
-    				/* Opcode: 32        Stack: a - i   Address: -     */
+    				/* Opcode: 32     Stack: a tos sos - i  Address: - */
     				/***************************************************/
 
-   fVM_AOT: a = vm->data[vm->sp-1];
-            b = vm->data[vm->sp-2];
+   fVM_AOT: vm->ip++;
+            a = vm->data[vm->sp];
+            b = vm->data[vm->sp-1];
+            vm->sp = vm->sp-1;
             acc = execute (acc, a, b)
             NEXT;
 
@@ -551,7 +553,8 @@ void vm_process(VM *vm)
 
    cVM_NOP:     CNEXT;
 
-   cVM_LIT:     psbd                                   /* (d+) = b    */ 
+   cVM_LIT:     vm->ip++;
+                psbd                                   /* (d+) = b    */ 
                 tab                                    /*    b = a    */
                 lia  (VMOP)                            /*    a = VMOP */
                 CNEXT;
@@ -586,7 +589,8 @@ void vm_process(VM *vm)
                 bi   (VMOP)                            /*    p = VMOP */
                 CNEXT;
 
-   cVM_RETURN:  ret                                    /*    p = (-s) */
+   cVM_RETURN:  vm->ip++;
+                retc                                   /*    p = (-s) */
                 NEXT;
 
    cVM_GT_JUMP: vm->ip++;
@@ -921,5 +925,8 @@ void vm_process(VM *vm)
                 exit (-1); 
    
    fVM_DEFAULT: vm->ip = IMAGE_SIZE;
+                printf ("ACC: %i | ",acc);
+                printf ("TOS: %i | ",vm->data[vm->sp-1]);
+                printf ("SND: %i \n",vm->data[vm->sp-2]);
 }
 

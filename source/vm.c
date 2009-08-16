@@ -921,8 +921,8 @@ void vm_process(VM *vm)
                 bizb (VMOP)                            /*  f.= : p = VMOP  */
                 CNEXT;
 
-   cVM_DEFAULT: printf ("Illegal opcode in stream detected !\n");
-                exit (-1); 
+   cVM_DEFAULT: printf ("Instruction: %i : ",vm->image[vm->ip]);
+				printf ("Illegal opcode in stream detected !\n");
    
    fVM_DEFAULT: vm->ip = IMAGE_SIZE;
                 printf ("ACC: %i | ",acc);

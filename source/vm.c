@@ -525,6 +525,17 @@ void vm_process(VM *vm)
             acc = execute (acc, a, b)
             NEXT;
 
+    				/***************************************************/
+    				/* TAIL  return current trace reference            */
+    				/* Opcode: 33     Stack: a tos sos - i  Address: - */
+    				/***************************************************/
+
+   fVM_TAIL: vm->ip++;
+             vm->sp++;
+             TOS = acc;
+             acc = comp_cofs;
+             NEXT;
+
    /* compiler routines */
 
                     /***************************************************
@@ -921,8 +932,26 @@ void vm_process(VM *vm)
                 bizb (VMOP)                            /*  f.= : p = VMOP  */
                 CNEXT;
 
+   cVM_LID:     vm->ip++;
+                lia (VMOP)                             /*    d = VMOP  */
+                CNEXT;
+
+   cVM_INCD:    incd                                   /*    d = d + 1 */
+                CNEXT;
+
+   cVM_DECD:    decd                                   /*    d = d - 1 */
+                CNEXT;
+
+   cVM_BNZD:    vm->ip++;                              /*        f = c.m.d */
+                bnzd (VMOP)                            /*  f.! : p = VMOP  */
+                CNEXT;
+
+   cVM_BIZD:    vm->ip++;                              /*        f = c.m.d */
+                bizd (VMOP)                            /*  f.= : p = VMOP  */
+                CNEXT;
+   
    cVM_DEFAULT: printf ("Instruction: %i : ",vm->image[vm->ip]);
-				printf ("Illegal opcode in stream detected !\n");
+		printf ("Illegal opcode in stream detected !\n");
    
    fVM_DEFAULT: vm->ip = IMAGE_SIZE;
                 printf ("ACC: %i | ",acc);

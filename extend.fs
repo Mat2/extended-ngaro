@@ -237,8 +237,25 @@ variable blk
   : remap  ( -- )    ['] next ['] key :is ;
   here is (e) ] setup remap ;
 }
+( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
+( A simple implementation of does>                            )
+( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
+: reclass last @ d->class ! ;
+: .does compiler @ -1 =if swap literal, compile pop drop ;; then drop ;
 
-
+macro: does>
+        1 , here 0 ,            ( compile address of code after does> [will be patched] )
+        ['] reclass compile     ( compile a call to reclass, which assigns the code )
+                                ( after does> as the class handler for the word. )
+        ['] ;; execute          ( compile an exit, so no code following does> will be )
+                                ( executed when the create/does> sequence is run. )
+        here swap !             ( Patch the address from the 1 , here 0 , line to the )
+                                ( actual start of the code for the does> action. )
+        here literal,           ( Compile the address following does> as a literal so )
+                                ( it can be used by the .does class. )
+        ['] .does compile       ( And finally, compile a call to the .does class, which )
+                                ( will take care of compile-time and interpret-time bits)
+;
 ( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
 ( All done! Fill the blocks with spaces, and we're good to go )
 ( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )

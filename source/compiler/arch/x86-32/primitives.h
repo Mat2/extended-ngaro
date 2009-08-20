@@ -911,8 +911,11 @@ void comp_cnza (int trace)
   int address = (int) comp_cbuffer + trace;
       val.w   = address;
 
-  /* taken: cmp al, 0 */
-  comp_tbuffer[comp_tptr++] = 0x3C;
+  /* taken: cmp eax, 0 */
+  comp_tbuffer[comp_tptr++] = 0x3D;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
   comp_tbuffer[comp_tptr++] = 0x00;
 
   /*        je ntaken */
@@ -946,8 +949,11 @@ void comp_ciza (int trace)
   int address = (int) comp_cbuffer + trace;
       val.w   = address;
 
-  /* taken: cmp al, 0 */
-  comp_tbuffer[comp_tptr++] = 0x3C;
+  /* taken: cmp eax, 0 */
+  comp_tbuffer[comp_tptr++] = 0x3D;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
   comp_tbuffer[comp_tptr++] = 0x00;
 
   /*        jne ntaken */
@@ -981,9 +987,12 @@ void comp_cnzb (int trace)
   int address = (int) comp_cbuffer + trace;
       val.w   = address;
 
-  /* taken: cmp bl, 0 */
-  comp_tbuffer[comp_tptr++] = 0x80;
+  /* taken: cmp ebx, 0 */
+  comp_tbuffer[comp_tptr++] = 0x81;
   comp_tbuffer[comp_tptr++] = 0xFB;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
   comp_tbuffer[comp_tptr++] = 0x00;
 
   /*        je ntaken */
@@ -1017,9 +1026,12 @@ void comp_cizb (int trace)
   int address = (int) comp_cbuffer + trace;
       val.w   = address;
 
-  /* taken: cmp bl, 0 */
-  comp_tbuffer[comp_tptr++] = 0x80;
+  /* taken: cmp ebx, 0 */
+  comp_tbuffer[comp_tptr++] = 0x81;
   comp_tbuffer[comp_tptr++] = 0xFB;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
   comp_tbuffer[comp_tptr++] = 0x00;
 
   /*        jne ntaken */
@@ -1237,8 +1249,11 @@ void comp_bnza (int trace)
   int address = (int) comp_cbuffer + trace;
       val.w   = address;
 
-  /* taken: cmp al, 0 */
-  comp_tbuffer[comp_tptr++] = 0x3C;
+  /* taken: cmp eax, 0 */
+  comp_tbuffer[comp_tptr++] = 0x3D;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
   comp_tbuffer[comp_tptr++] = 0x00;
 
   /*        je ntaken */
@@ -1272,8 +1287,11 @@ void comp_biza (int trace)
   int address = (int) comp_cbuffer + trace;
       val.w   = address;
 
-  /* taken: cmp al, 0 */
-  comp_tbuffer[comp_tptr++] = 0x3C;
+  /* taken: cmp eax, 0 */
+  comp_tbuffer[comp_tptr++] = 0x3D;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
   comp_tbuffer[comp_tptr++] = 0x00;
 
   /*        jne ntaken */
@@ -1307,9 +1325,12 @@ void comp_bnzb (int trace)
   int address = (int) comp_cbuffer + trace;
       val.w   = address;
 
-  /* taken: cmp bl, 0 */
-  comp_tbuffer[comp_tptr++] = 0x80;
+  /* taken: cmp ebx, 0 */
+  comp_tbuffer[comp_tptr++] = 0x81;
   comp_tbuffer[comp_tptr++] = 0xFB;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
   comp_tbuffer[comp_tptr++] = 0x00;
 
   /*        je ntaken */
@@ -1343,9 +1364,12 @@ void comp_bizb (int trace)
   int address = (int) comp_cbuffer + trace;
       val.w   = address;
 
-  /* taken: cmp bl, 0 */
-  comp_tbuffer[comp_tptr++] = 0x80;
+  /* taken: cmp ebx, 0 */
+  comp_tbuffer[comp_tptr++] = 0x81;
   comp_tbuffer[comp_tptr++] = 0xFB;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
   comp_tbuffer[comp_tptr++] = 0x00;
 
   /*        jne ntaken */
@@ -1370,6 +1394,125 @@ void comp_return (void)
 {
   comp_tbuffer[comp_tptr++] = 0xC3;
 }
+
+/* primitives whic directly access TOS in data stack */
+
+#define LIC(n) comp_lic (n);
+#define lic(n) comp_lic (n);
+
+void comp_lic (int value)
+{
+  imm val; val.w = value;
+
+  /* mov dword [edi-4],nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = 0xC7;      
+  comp_tbuffer[comp_tptr++] = 0x47;      
+  comp_tbuffer[comp_tptr++] = 0xFC;      
+  comp_immediate (val);
+}
+
+#define INCD comp_incd ();
+#define incd comp_incd ();
+
+void comp_incd (void)
+{
+  /* inc dword [edi-4] */
+  comp_tbuffer[comp_tptr++] = 0xFF;      
+  comp_tbuffer[comp_tptr++] = 0x47;
+  comp_tbuffer[comp_tptr++] = 0xFC;      
+}
+
+#define DECD comp_decd ();
+#define decd comp_decd ();
+
+void comp_decd (void)
+{
+  /* dec dword [edi-4] */
+  comp_tbuffer[comp_tptr++] = 0xFF;      
+  comp_tbuffer[comp_tptr++] = 0x4F;
+  comp_tbuffer[comp_tptr++] = 0xFC;        
+}
+
+#define BNZD(n) comp_bnzd (n);
+#define bnzd(n) comp_bnzd (n);
+
+void comp_bnzd (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_bnzd: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: cmp dword [edi-4], 0 */
+  comp_tbuffer[comp_tptr++] = 0x81;
+  comp_tbuffer[comp_tptr++] = 0x7F;
+  comp_tbuffer[comp_tptr++] = 0xFC;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
+
+  /*        je ntaken */
+  comp_tbuffer[comp_tptr++] = 0x74;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        jmp ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xE1;
+
+  /* ntaken: */
+}
+
+#define BIZD(t) comp_bizd (t);
+#define bizd(t) comp_bizd (t);
+
+void comp_bizd (int trace)
+{
+  imm val;
+
+  if ((trace > comp_clen) || (trace < 0)) 
+  { 
+    printf ("comp_bizb: E5\n"); 
+    exit (-1); 
+  }
+
+  int address = (int) comp_cbuffer + trace;
+      val.w   = address;
+
+  /* taken: cmp dword [edi], 0 */
+  comp_tbuffer[comp_tptr++] = 0x81;
+  comp_tbuffer[comp_tptr++] = 0x7F;
+  comp_tbuffer[comp_tptr++] = 0xFC;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
+  comp_tbuffer[comp_tptr++] = 0x00;
+
+  /*        jne ntaken */
+  comp_tbuffer[comp_tptr++] = 0x75;
+  comp_tbuffer[comp_tptr++] = 0x07;
+
+  /*        mov ecx, trace */
+  comp_tbuffer[comp_tptr++] = 0xB9;
+  comp_immediate (val);      
+
+  /*        jmp ecx */
+  comp_tbuffer[comp_tptr++] = 0xFF;
+  comp_tbuffer[comp_tptr++] = 0xE1;
+
+  /* ntaken: */
+}
+
 
 /* common primitives */
 

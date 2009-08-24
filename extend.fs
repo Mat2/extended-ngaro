@@ -148,115 +148,16 @@ compiler: ;then ( - )
 : forget ( "- ) ' drop which @ dup heap ! @ last ! ;
 
 
-
 ( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
-( This is a block editor that I've been using for many years. )
-( It's simple, and doesn't have a lot of features, but it is  )
-( more than enough for most of my prototyping work.           )
-(                                                             )
-( Actually, it's proven more popular than I ever expected. It )
-( has been used by many of Retro's users, and implementations )
-( now exist for several other Forth systems.                  )
+( Allow changing the class of a word                          )
 ( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
-( Line and column numbers start at 0.                         )
-( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
-( Quick Reference:                                            )
-(      # s        Select a new block                          )
-(        p        Previous block                              )
-(        n        Next block                                  )
-(      # i ..     Insert .. into line                         )
-(   # #2 ia ..    Insert .. into line [#2] starting at        )
-(                 column [#]                                  )
-(        x        Erase the current block                     )
-(      # d        Erase the specified line                    )
-(        v        Display the current block                   )
-(        e        Evaluate Block                              )
-(        new      Erase all blocks                            )
-( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
-( The memory layout and basic configuration.                  )
-( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
-1024 constant #-blocks
- 512 constant #-block-size
-#mem @ #-block-size #-blocks * - constant offset
-
-13 variable: line-ending
-
-variable blk
-: block     512 * offset + ;
-: (block)   blk @ block ;
-: (line)    64 * (block) + ;
-
-: (v) ;
-: (e) ;
-: v   ( -  ) (v) ;
-: s   ( n- ) blk ! v ;
-: d   ( n- ) (line) 32 64 fill v ;
-: x   ( -  ) (block) 32 512 fill v ;
-: p   ( -  ) -1 blk +! v ;
-: n   ( -  ) 1 blk +! v ;
-: ia  ( nn"- )
-  (line) + push line-ending @ accept tib pop
-  tib getLength copy v ;
-: i   ( n"- ) 0 swap ia v ;
-: new ( -  ) offset 32 #-block-size #-blocks * fill ;
-: e   ( -  ) (e) ;
+: reclass ( a"- ) ' drop which @ d->class ! ;
 
 
 ( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
-( Default Block Viewer                                        )
+( Numeric Bases                                               )
 ( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
-{
-  : (type)  for dup @ emit 1+ next ;
-  : type    (type) drop ;
-  : space   32 emit ;
-
-  : row     . dup 64 type 64 + cr ;
-  : .rows   0 row 1 row 2 row 3 row
-            4 row 5 row 6 row 7 row ;
-  : .block  ." Block: " blk @ . ." of " #-blocks . ;
-  : x       ." +---:---+---:---" ;
-  : bar     space space x x x x cr ;
-  : vb      bar blk @ block .rows drop bar ;
-  : status  .block ;
-  here is (v) ] clear vb status ;
-}
-
-
-( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
-( Default Block Evaluator                                     )
-( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
-{
-  variable count
-  variable buffer
-  : setup  ( -- )    512 count ! (block) buffer ! ;
-  : -remap ( -- )    ['] key :devector ;
-  : get    ( -- c )  buffer @ @ ;
-  : next   ( -- c )
-    count @ 0 =if 32 -remap ;then
-    count -- get buffer ++ ;
-  : remap  ( -- )    ['] next ['] key :is ;
-  here is (e) ] setup remap ;
-}
-( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
-( A simple implementation of does>                            )
-( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
-: reclass last @ d->class ! ;
-: .does compiler @ -1 =if swap literal, compile pop drop ;; then drop ;
-
-macro: does>
-        1 , here 0 ,            ( compile address of code after does> [will be patched] )
-        ['] reclass compile     ( compile a call to reclass, which assigns the code )
-                                ( after does> as the class handler for the word. )
-        ['] ;; execute          ( compile an exit, so no code following does> will be )
-                                ( executed when the create/does> sequence is run. )
-        here swap !             ( Patch the address from the 1 , here 0 , line to the )
-                                ( actual start of the code for the does> action. )
-        here literal,           ( Compile the address following does> as a literal so )
-                                ( it can be used by the .does class. )
-        ['] .does compile       ( And finally, compile a call to the .does class, which )
-                                ( will take care of compile-time and interpret-time bits)
-;
-( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
-( All done! Fill the blocks with spaces, and we're good to go )
-( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
-new
+: decimal ( - ) 10 base ! ;
+: hex     ( - ) 16 base ! ;
+: octal   ( - )  8 base ! ;
+: binary  ( - )  2 base ! ;

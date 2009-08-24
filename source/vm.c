@@ -954,8 +954,5 @@ void vm_process(VM *vm)
 		printf ("Illegal opcode in stream detected !\n");
    
    fVM_DEFAULT: vm->ip = IMAGE_SIZE;
-                printf ("ACC: %i | ",acc);
-                printf ("TOS: %i | ",vm->data[vm->sp-1]);
-                printf ("SND: %i \n",vm->data[vm->sp-2]);
 }
 

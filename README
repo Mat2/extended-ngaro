@@ -17,26 +17,40 @@ It is uncommon mainly in tree aspects:
 * It's a accumulator/store design with efficient interpretation
   in mind.
 
-Current status:
+Current status (version 0.1):
 
 * The vm is usable and the compiler can be invoked from Ngaro
-  with opcode 31 (stream). Compiled traces are executable with
-  opcode 32 (aot).
+  with opcode 31 (ins). Compiled traces are executable with
+  opcode 32 (aot) and tail branch locations can be computed
+  with opcode 33 (cofs).
+
+* A simple assembler and disassembler (retrospect) is included
+  in the retro vm-image.
+
+TO-DO for version 0.2:
+
+* x86-64 and ARM back-ends.
+* Documentation (ISA, compiler and optimation guides).
+
+TO-DO for version 0.3:
+
+* PowerPC and TMS320C64x back-ends.
+* add port interfaces for block (via virtual images) and 
+  serial devices (keyboard, mouse, etc), GPU, interrupts,
+  multiprocessing.
 
 Compilation:
 
 * "make"
 
-To do:
-
-- Compiler back-ends for x86-64, ARM, PowerPC and TMS320C64x.
-- Assembler for the extended-instruction set.
-- Documentation: Ngaro ISA reference guide, Compiler Manual. 
-
 Remark:
 
 The replicated-switch threading method performs better on my
-Athlon64 3000x than the older indirect-token threading
-interpreter (see ngaro-fast [retro10.1]) and results in an
-equal performance on Celeron M and possibly Atom based cpu's.
-So, for performance reasons use this vm !
+Athlon64 3000x than the older token threading interpreter 
+(see ngaro-fast [retro10.1]) and results in an equal 
+performance on Celeron M and possibly Atom based cpu's.
+
+For a maximum of performance use the AOT compiler, generate an
+individual instruction set for your application and optimate
+the microcode. The extended-instruction set allows very 
+sophisticated optimation strategies !

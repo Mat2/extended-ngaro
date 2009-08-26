@@ -143,11 +143,30 @@ enum vm_opcode {VM_NOP,       /* 0   */
                 VM_INCD,      /* 105 */
                 VM_DECD,      /* 106 */ 
                 VM_BNZD,      /* 107 */
-                VM_BIZD       /* 108 */ };
+                VM_BIZD,      /* 108 */ 
+                VM_ADIA,      /* 109 */
+                VM_SBIA,      /* 110 */
+                VM_ANIA,      /* 111 */
+                VM_ORIA,      /* 112 */
+                VM_XOIA,      /* 113 */
+                VM_CPIA,      /* 114 */
+                VM_ADIB,      /* 115 */
+                VM_SBIB,      /* 116 */
+                VM_ANIB,      /* 117 */
+                VM_ORIB,      /* 118 */
+                VM_XOIB,      /* 119 */
+                VM_CPIB,      /* 120 */
+                VM_LISA,      /* 121 */
+                VM_LISB,      /* 122 */
+                VM_SISA,      /* 123 */
+                VM_SISB,      /* 124 */
+                VM_INIS,      /* 125 */
+                VM_DEIS       /* 126 */
+              };
 
 /* interpreter */
 
-#define NEXT  	switch(vm->image[vm->ip])                     \
+#define NEXT  	switch(vm->image[vm->ip])                                 \
   			    {                                             \
     				case VM_NOP: 	   goto fVM_NOP;          \
     				case VM_LIT: 	   goto fVM_LIT;          \
@@ -188,7 +207,7 @@ enum vm_opcode {VM_NOP,       /* 0   */
 
 /* compiler */
 
-#define INEXT  	switch(vm->image[vm->ip])                     \
+#define INEXT  	switch(vm->image[vm->ip])                                 \
   			    {                                             \
     				case VM_NOP: 	   goto cVM_NOP;          \
     				case VM_LIT: 	   goto cVM_LIT;          \
@@ -296,9 +315,27 @@ enum vm_opcode {VM_NOP,       /* 0   */
                                 case VM_DECD:      goto cVM_DECD;         \
                                 case VM_BNZD:      goto cVM_BNZD;         \
                                 case VM_BIZD:      goto cVM_BIZD;         \
+                                case VM_ADIA:      goto cVM_ADIA;         \
+                                case VM_SBIA:      goto cVM_SBIA;         \
+                                case VM_ANIA:      goto cVM_ANIA;         \
+                                case VM_ORIA:      goto cVM_ORIA;         \
+                                case VM_XOIA:      goto cVM_XOIA;         \
+                                case VM_CPIA:      goto cVM_CPIA;         \
+                                case VM_ADIB:      goto cVM_ADIB;         \
+                                case VM_SBIB:      goto cVM_SBIB;         \
+                                case VM_ANIB:      goto cVM_ANIB;         \
+                                case VM_ORIB:      goto cVM_ORIB;         \
+                                case VM_XOIB:      goto cVM_XOIB;         \
+                                case VM_CPIB:      goto cVM_CPIB;         \
+                                case VM_LISA:      goto cVM_LISA;         \
+                                case VM_LISB:      goto cVM_LISB;         \
+                                case VM_SISA:      goto cVM_SISA;         \
+                                case VM_SISB:      goto cVM_SISB;         \
+                                case VM_INIS:      goto cVM_INIS;         \
+                                case VM_DEIS:      goto cVM_DEIS;         \
     				default:           goto cVM_DEFAULT;      \
   			    }
 #define CNEXT   vm->ip++; INEXT
 
-#define NUM_OPS VM_BIZD
+#define NUM_OPS VM_DEIS
 #endif

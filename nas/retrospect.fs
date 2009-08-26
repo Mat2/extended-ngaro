@@ -18,19 +18,15 @@
 {{
   variable *addr
 
-  : nextOp    1 *addr +! 
-  ;
+  : nextOp    1 *addr +! ;
   
   : @addr     *addr @ 
               @ 
   ;
 
-  : .contents @addr . 
-  ;
+  : .contents @addr . ;
 
-  : .addr     *addr @ 
-              . 
-  ;
+  : .addr     *addr @ . ;
 
   : .ascii dup 32 >if 
              dup 128 <if 
@@ -49,9 +45,7 @@
   ;
 
   compiler: a: ` over 
-               ` =if 
-               s: 
-               ` then 
+               ` =if s: ` then 
   ;
 
   : .name d->name type cr ;
@@ -88,26 +82,30 @@
     20 a: ands    21 a: gors     22 a: xors     23 a: shls
     24 a: shrs    25 a: reqs     26 a: incs     27 a: decs
     28 a: ldps    29 a: stps     30 a: wait     31 a: ins
-    32 a: aot     33 a: cofs     34 a: lia      35 a: psad
+    32 a: aot     33 a: cofs     34 b: lia      35 a: psad
     36 a: psar    37 a: plda     38 a: plra     39 a: tda
     40 a: tra     41 a: tad      42 a: tar      43 a: tab
     44 a: tba     45 a: adda     46 a: suba     47 a: diva
     48 a: mula    49 a: inca     50 a: deca     51 a: anda
-    52 a: gora    53 a: xora     54 a: shla     55 a: slia
-    56 a: shra    57 a: sria     58 a: cmpa     59 a: ldra
-    60 a: stra    61 a: lib      62 a: psbd     63 a: psbr
+    52 a: gora    53 a: xora     54 a: shla     55 b: slia
+    56 a: shra    57 b: sria     58 a: cmpa     59 a: ldra
+    60 a: stra    61 b: lib      62 a: psbd     63 a: psbr
     64 a: pldb    65 a: plrb     66 a: tdb      67 a: trb
     68 a: addb    69 a: subb     70 a: divb     71 a: mulb
     72 a: incb    73 a: decb     74 a: andb     75 a: gorb
-    76 a: xorb    77 a: cmpb     78 a: shlb     79 a: slib
-    80 a: shrb    81 a: srib     82 a: ldrb     83 a: strb
-    84 a: ci      85 a: cieq     86 a: cigr     87 a: cile
-    88 a: cnza    89 a: ciza     90 a: cnzb     91 a: cizb
-    92 a: cra     93 a: crb      94 a: bra      95 a: brb
-    96 a: bi      97 a: bieq     98 a: bigr     99 a: bile
-   100 a: bnza   101 a: biza    102 a: bnzb    103 a: bizb
-   104 a: lid    105 a: incd    106 a: decd    107 a: bnzd
-   108 a: bizd
+    76 a: xorb    77 a: cmpb     78 a: shlb     79 b: slib
+    80 a: shrb    81 b: srib     82 a: ldrb     83 a: strb
+    84 b: ci      85 b: cieq     86 b: cigr     87 b: cile
+    88 b: cnza    89 b: ciza     90 b: cnzb     91 b: cizb
+    92 a: cra     93 a: crb      94 b: bra      95 b: brb
+    96 b: bi      97 b: bieq     98 b: bigr     99 b: bile
+   100 b: bnza   101 b: biza    102 b: bnzb    103 b: bizb
+   104 b: lid    105 a: incd    106 a: decd    107 b: bnzd
+   108 b: bizd   109 b: adia    110 b: sbia    111 b: ania
+   112 b: oria   113 b: xoia    114 b: cpia    115 b: adib
+   116 b: sbib   117 b: anib    118 b: orib    129 b: xoib
+   120 b: cpib   121 b: lisa    122 b: sisa    123 b: lisb
+   124 b: sisb   125 b: inis    126 b: deis
 
     s" unknown: " type dup . .ascii cr 
   ;
@@ -132,7 +130,8 @@
 
   : getWord ' drop which @ d->xt @ *addr ! ;
 
----reveal---
+  ---reveal---
+
   : dump ( an- )  cr 
                   for 
                     @+ over 1- . . cr 

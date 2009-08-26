@@ -254,6 +254,18 @@ void comp_adda (void)
   comp_tbuffer[comp_tptr++] = 0xD8;
 }
 
+#define ADIA(n) comp_adia (n);
+#define adia(n) comp_adia (n);
+
+void comp_adia (int value)
+{
+  imm val; val.w = value;
+
+  /* add eax,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = 0x05;      
+  comp_immediate (val);
+}
+
 #define SUBA comp_suba ();
 #define suba comp_suba ();
 
@@ -263,6 +275,18 @@ void comp_suba (void)
   comp_tbuffer[comp_tptr++] = 0x29;      
   comp_tbuffer[comp_tptr++] = 0xD8;
 
+}
+
+#define SBIA(n) comp_sbia (n);
+#define sbia(n) comp_sbia (n);
+
+void comp_sbia (int value)
+{
+  imm val; val.w = value;
+
+  /* sub eax,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = 0x2D;      
+  comp_immediate (val);
 }
 
 #define DIVA comp_diva ();
@@ -323,6 +347,18 @@ void comp_anda (void)
   comp_tbuffer[comp_tptr++] = 0xD8;      
 }
 
+#define ANIA(n) comp_ania (n);
+#define ania(n) comp_ania (n);
+
+void comp_ania (int value)
+{
+  imm val; val.w = value;
+
+  /* and eax,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = 0x25;      
+  comp_immediate (val);
+}
+
 #define GORA comp_gora ();
 #define gora comp_gora ();
 
@@ -333,6 +369,18 @@ void comp_gora (void)
   comp_tbuffer[comp_tptr++] = 0xD8;      
 }
 
+#define ORIA(n) comp_oria (n);
+#define oria(n) comp_oria (n);
+
+void comp_oria (int value)
+{
+  imm val; val.w = value;
+
+  /* or eax,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = 0x0D;      
+  comp_immediate (val);
+}
+
 #define XORA comp_xora ();
 #define xora comp_xora ();
 
@@ -341,6 +389,18 @@ void comp_xora (void)
   /* xor eax, ebx */
   comp_tbuffer[comp_tptr++] = 0x31;      
   comp_tbuffer[comp_tptr++] = 0xD8;      
+}
+
+#define XOIA(n) comp_xoia (n);
+#define xoia(n) comp_xoia (n);
+
+void comp_xoia (int value)
+{
+  imm val; val.w = value;
+
+  /* xor eax,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = 0x35;      
+  comp_immediate (val);
 }
 
 #define SHLA comp_shla ();
@@ -417,6 +477,18 @@ void comp_cmpa (void)
   /*  cmp eax, ebx */
   comp_tbuffer[comp_tptr++] = 0x39;      
   comp_tbuffer[comp_tptr++] = 0xD8;      
+}
+
+#define CPIA(n) comp_cpia (n);
+#define cpia(n) comp_cpia (n);
+
+void comp_cpia (int value)
+{
+  imm val; val.w = value;
+
+  /* cmp eax,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = 0x3D;      
+  comp_immediate (val);
 }
 
 #define LDRA comp_ldra ();
@@ -557,6 +629,19 @@ void comp_addb (void)
   comp_tbuffer[comp_tptr++] = 0xC3;
 }
 
+#define ADIB(n) comp_adib (n);
+#define adib(n) comp_adib (n);
+
+void comp_adib (int value)
+{
+  imm val; val.w = value;
+
+  /* add ebx,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = 0x81;
+  comp_tbuffer[comp_tptr++] = 0xC3;      
+  comp_immediate (val);
+}
+
 #define SUBB comp_subb ();
 #define subb comp_subb ();
 
@@ -566,6 +651,19 @@ void comp_subb (void)
   comp_tbuffer[comp_tptr++] = 0x29;      
   comp_tbuffer[comp_tptr++] = 0xC3;
 
+}
+
+#define SBIB(n) comp_sbib (n);
+#define sbib(n) comp_sbib (n);
+
+void comp_sbib (int value)
+{
+  imm val; val.w = value;
+
+  /* sub ebx,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = 0x81;
+  comp_tbuffer[comp_tptr++] = 0xEB;      
+  comp_immediate (val);
 }
 
 #define DIVB comp_divb ();
@@ -647,6 +745,19 @@ void comp_andb (void)
   comp_tbuffer[comp_tptr++] = 0xC3;      
 }
 
+#define ANIB(n) comp_anib (n);
+#define anib(n) comp_anib (n);
+
+void comp_anib (int value)
+{
+  imm val; val.w = value;
+
+  /* and ebx,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = 0x81;
+  comp_tbuffer[comp_tptr++] = 0xE3;      
+  comp_immediate (val);
+}
+
 #define GORB comp_gorb ();
 #define gorb comp_gorb ();
 
@@ -655,6 +766,19 @@ void comp_gorb (void)
   /* or ebx, eax */
   comp_tbuffer[comp_tptr++] = 0x09;      
   comp_tbuffer[comp_tptr++] = 0xC3;      
+}
+
+#define ORIB(n) comp_orib (n);
+#define orib(n) comp_orib (n);
+
+void comp_orib (int value)
+{
+  imm val; val.w = value;
+
+  /* or ebx,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = 0x81;
+  comp_tbuffer[comp_tptr++] = 0xCB;      
+  comp_immediate (val);
 }
 
 #define XORB comp_xorb ();
@@ -667,6 +791,19 @@ void comp_xorb (void)
   comp_tbuffer[comp_tptr++] = 0xC3;      
 }
 
+#define XOIB(n) comp_xoib (n);
+#define xoib(n) comp_xoib (n);
+
+void comp_xoib (int value)
+{
+  imm val; val.w = value;
+
+  /* xor ebx,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = 0x81;
+  comp_tbuffer[comp_tptr++] = 0xF3;      
+  comp_immediate (val);
+}
+
 #define CMPB comp_cmpb ();
 #define cmpb comp_cmpb ();
 
@@ -675,6 +812,19 @@ void comp_cmpb (void)
   /* cmp ebx, eax */
   comp_tbuffer[comp_tptr++] = 0x39;      
   comp_tbuffer[comp_tptr++] = 0xC3;      
+}
+
+#define CPIB(n) comp_cpib (n);
+#define cpib(n) comp_cpib (n);
+
+void comp_cpib (int value)
+{
+  imm val; val.w = value;
+
+  /* cmp ebx,nnnnnnnn */
+  comp_tbuffer[comp_tptr++] = 0x81;
+  comp_tbuffer[comp_tptr++] = 0xFB;      
+  comp_immediate (val);
 }
 
 #define SHLB comp_shlb ();
@@ -1397,10 +1547,10 @@ void comp_return (void)
 
 /* primitives whic directly access TOS in data stack */
 
-#define LIC(n) comp_lic (n);
-#define lic(n) comp_lic (n);
+#define LID(n) comp_lid (n);
+#define lid(n) comp_lid (n);
 
-void comp_lic (int value)
+void comp_lid (int value)
 {
   imm val; val.w = value;
 
@@ -1482,7 +1632,7 @@ void comp_bizd (int trace)
 
   if ((trace > comp_clen) || (trace < 0)) 
   { 
-    printf ("comp_bizb: E5\n"); 
+    printf ("comp_bizd: E5\n"); 
     exit (-1); 
   }
 
@@ -1513,7 +1663,6 @@ void comp_bizd (int trace)
   /* ntaken: */
 }
 
-
 /* common primitives */
 
 #define SWAP comp_swap ();
@@ -1523,5 +1672,199 @@ void comp_swap (void)
 {
   /* xchg eax, ebx */
   comp_tbuffer[comp_tptr++] = 0x93;      
+}
+
+#define LISA(n) comp_lisa (n);
+#define lisa(n) comp_lisa (n);
+
+void comp_lisa (int value)
+{
+  switch (value)
+  {
+    case 0:  /* mov eax, [edi-4] */
+             comp_tbuffer[comp_tptr++] = 0x8B;
+             comp_tbuffer[comp_tptr++] = 0x47;
+             comp_tbuffer[comp_tptr++] = 0xFC;
+             break;
+    case 1:  /* mov eax, [edi-8] */
+             comp_tbuffer[comp_tptr++] = 0x8B;
+             comp_tbuffer[comp_tptr++] = 0x47;
+             comp_tbuffer[comp_tptr++] = 0xF8;
+             break;
+    case 2:  /* mov eax, [edi-12] */
+             comp_tbuffer[comp_tptr++] = 0x8B;
+             comp_tbuffer[comp_tptr++] = 0x47;
+             comp_tbuffer[comp_tptr++] = 0xF4;
+             break;
+    case 3:  /* mov eax, [edi-16] */
+             comp_tbuffer[comp_tptr++] = 0x8B;
+             comp_tbuffer[comp_tptr++] = 0x47;
+             comp_tbuffer[comp_tptr++] = 0xF0;
+             break;
+    default: printf ("comp_lisa: E5\n"); 
+             exit (-1); 
+  }
+}
+
+#define LISB(n) comp_lisb (n);
+#define lisb(n) comp_lisb (n);
+
+void comp_lisb (int value)
+{
+  switch (value)
+  {
+    case 0:  /* mov ebx, [edi-4] */
+             comp_tbuffer[comp_tptr++] = 0x8B;
+             comp_tbuffer[comp_tptr++] = 0x5F;
+             comp_tbuffer[comp_tptr++] = 0xFC;
+             break;
+    case 1:  /* mov ebx, [edi-8] */
+             comp_tbuffer[comp_tptr++] = 0x8B;
+             comp_tbuffer[comp_tptr++] = 0x5F;
+             comp_tbuffer[comp_tptr++] = 0xF8;
+             break;
+    case 2:  /* mov ebx, [edi-12] */
+             comp_tbuffer[comp_tptr++] = 0x8B;
+             comp_tbuffer[comp_tptr++] = 0x5F;
+             comp_tbuffer[comp_tptr++] = 0xF4;
+             break;
+    case 3:  /* mov ebx, [edi-16] */
+             comp_tbuffer[comp_tptr++] = 0x8B;
+             comp_tbuffer[comp_tptr++] = 0x5F;
+             comp_tbuffer[comp_tptr++] = 0xF0;
+             break;
+    default: printf ("comp_lisb: E5\n"); 
+             exit (-1); 
+  }
+}
+
+
+
+#define SISA(n) comp_sisa (n);
+#define sisa(n) comp_sisa (n);
+
+void comp_sisa (int value)
+{
+  switch (value)
+  {
+    case 0:  /* mov [edi-4], eax */
+             comp_tbuffer[comp_tptr++] = 0x89;
+             comp_tbuffer[comp_tptr++] = 0x47;
+             comp_tbuffer[comp_tptr++] = 0xFC;
+             break;
+    case 1:  /* mov [edi-8], eax */
+             comp_tbuffer[comp_tptr++] = 0x89;
+             comp_tbuffer[comp_tptr++] = 0x47;
+             comp_tbuffer[comp_tptr++] = 0xF8;
+             break;
+    case 2:  /* mov [edi-12], eax */
+             comp_tbuffer[comp_tptr++] = 0x89;
+             comp_tbuffer[comp_tptr++] = 0x47;
+             comp_tbuffer[comp_tptr++] = 0xF4;
+             break;
+    case 3:  /* mov [edi-16], eax */
+             comp_tbuffer[comp_tptr++] = 0x89;
+             comp_tbuffer[comp_tptr++] = 0x47;
+             comp_tbuffer[comp_tptr++] = 0xF0;
+             break;
+    default: printf ("comp_sisa: E5\n"); 
+             exit (-1); 
+  }
+}
+
+#define SISB(n) comp_sisb (n);
+#define sisb(n) comp_sisb (n);
+
+void comp_sisb (int value)
+{
+  switch (value)
+  {
+    case 0:  /* mov [edi-4], ebx */
+             comp_tbuffer[comp_tptr++] = 0x89;
+             comp_tbuffer[comp_tptr++] = 0x5F;
+             comp_tbuffer[comp_tptr++] = 0xFC;
+             break;
+    case 1:  /* mov [edi-8], ebx */
+             comp_tbuffer[comp_tptr++] = 0x89;
+             comp_tbuffer[comp_tptr++] = 0x5F;
+             comp_tbuffer[comp_tptr++] = 0xF8;
+             break;
+    case 2:  /* mov [edi-12], ebx */
+             comp_tbuffer[comp_tptr++] = 0x89;
+             comp_tbuffer[comp_tptr++] = 0x5F;
+             comp_tbuffer[comp_tptr++] = 0xF4;
+             break;
+    case 3:  /* mov [edi-16], ebx */
+             comp_tbuffer[comp_tptr++] = 0x89;
+             comp_tbuffer[comp_tptr++] = 0x5F;
+             comp_tbuffer[comp_tptr++] = 0xF0;
+             break;
+    default: printf ("comp_sisb: E5\n"); 
+             exit (-1); 
+  }
+}
+
+#define INIS(n) comp_inis (n);
+#define inis(n) comp_inis (n);
+
+void comp_inis (int value)
+{
+  switch (value)
+  {
+    case 0:  /* inc dword [edi-4] */
+             comp_tbuffer[comp_tptr++] = 0xFF;
+             comp_tbuffer[comp_tptr++] = 0x47;
+             comp_tbuffer[comp_tptr++] = 0xFC;
+             break;
+    case 1:  /* inc dword [edi-8] */
+             comp_tbuffer[comp_tptr++] = 0xFF;
+             comp_tbuffer[comp_tptr++] = 0x47;
+             comp_tbuffer[comp_tptr++] = 0xF8;
+             break;
+    case 2:  /* inc dword [edi-12] */
+             comp_tbuffer[comp_tptr++] = 0xFF;
+             comp_tbuffer[comp_tptr++] = 0x47;
+             comp_tbuffer[comp_tptr++] = 0xF4;
+             break;
+    case 3:  /* inc dword [edi-16] */
+             comp_tbuffer[comp_tptr++] = 0xFF;
+             comp_tbuffer[comp_tptr++] = 0x47;
+             comp_tbuffer[comp_tptr++] = 0xF0;
+             break;
+    default: printf ("comp_incs: E5\n"); 
+             exit (-1); 
+  }
+}
+
+#define DEIS(n) comp_deis (n);
+#define deis(n) comp_deis (n);
+
+void comp_deis (int value)
+{
+  switch (value)
+  {
+    case 0:  /* dec dword [edi-4] */
+             comp_tbuffer[comp_tptr++] = 0xFF;
+             comp_tbuffer[comp_tptr++] = 0x4F;
+             comp_tbuffer[comp_tptr++] = 0xFC;
+             break;
+    case 1:  /* dec dword [edi-8] */
+             comp_tbuffer[comp_tptr++] = 0xFF;
+             comp_tbuffer[comp_tptr++] = 0x4F;
+             comp_tbuffer[comp_tptr++] = 0xF8;
+             break;
+    case 2:  /* dec dword [edi-12] */
+             comp_tbuffer[comp_tptr++] = 0xFF;
+             comp_tbuffer[comp_tptr++] = 0x4F;
+             comp_tbuffer[comp_tptr++] = 0xF4;
+             break;
+    case 3:  /* dec dword [edi-16] */
+             comp_tbuffer[comp_tptr++] = 0xFF;
+             comp_tbuffer[comp_tptr++] = 0x4F;
+             comp_tbuffer[comp_tptr++] = 0xF0;
+             break;
+    default: printf ("comp_decs: E5\n"); 
+             exit (-1); 
+  }
 }
 

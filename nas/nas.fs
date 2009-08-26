@@ -1,10 +1,10 @@
 ( ------------------------------------------------------ )
-( NAS:			Ngaro Assembler                  )
-( Forth:		Retro Forth 10                   )
-( Version:		0.1                              )
-( File:			nas.fs                           )
+( NAS:                  Ngaro Assembler                  )
+( Forth:                Retro Forth 10                   )
+( Version:              0.1                              )
+( File:                 nas.fs                           )
 ( Description:	        Basic word set for the compiler  )
-( Licence:		See LICENCE                      )
+( Licence:              See LICENCE                      )
 ( Needs:                Retro image with extend.ngaro    )
 ( ------------------------------------------------------ )
 
@@ -145,6 +145,24 @@
 106 opcode: decd
 107 opcode: bnzd
 108 opcode: bizd
+109 opcode: adia
+110 opcode: sbia
+111 opcode: ania
+112 opcode: oria
+113 opcode: xoia
+114 opcode: cpia
+115 opcode: adib
+116 opcode: sbib
+117 opcode: anib
+118 opcode: orib
+119 opcode: xoib
+120 opcode: cpib
+121 opcode: lisa
+122 opcode: lisb
+123 opcode: sisa
+124 opcode: sisb
+125 opcode: inis
+126 opcode: deis
 
 ( syntax sugar )
 

@@ -949,7 +949,79 @@ void vm_process(VM *vm)
    cVM_BIZD:    vm->ip++;                              /*        f = c.m.d */
                 bizd (VMOP)                            /*  f.= : p = VMOP  */
                 CNEXT;
-   
+
+   cVM_ADIA:    vm->ip++;                              
+                adia (VMOP)                            /*        a = a + VMOP */
+                CNEXT;
+
+   cVM_SBIA:    vm->ip++;                              
+                sbia (VMOP)                            /*        a = a - VMOP */
+                CNEXT;
+
+   cVM_ANIA:    vm->ip++;                              
+                ania (VMOP)                            /*        a = a & VMOP */
+                CNEXT;
+
+   cVM_ORIA:    vm->ip++;                              
+                oria (VMOP)                            /*        a = a | VMOP */
+                CNEXT;
+
+   cVM_XOIA:    vm->ip++;                              
+                xoia (VMOP)                            /*        a = a ^ VMOP */
+                CNEXT;
+
+   cVM_CPIA:    vm->ip++;                              /*        f = c.VMOP.b */
+                cpia (VMOP)                            
+                CNEXT;
+
+   cVM_ADIB:    vm->ip++;                              
+                adib (VMOP)                            /*        b = b + VMOP */
+                CNEXT;
+
+   cVM_SBIB:    vm->ip++;                              
+                sbib (VMOP)                            /*        b = b - VMOP */
+                CNEXT;
+
+   cVM_ANIB:    vm->ip++;                              
+                anib (VMOP)                            /*        b = b & VMOP */
+                CNEXT;
+
+   cVM_ORIB:    vm->ip++;                              
+                orib (VMOP)                            /*        b = b | VMOP */
+                CNEXT;
+
+   cVM_XOIB:    vm->ip++;                              
+                xoib (VMOP)                            /*        b = b ^ VMOP */
+                CNEXT;
+
+   cVM_CPIB:    vm->ip++;                              /*        f = c.VMOP.b */
+                cpib (VMOP)                            
+                CNEXT;
+
+   cVM_LISA:    vm->ip++;
+                lisa (VMOP)                            /*        a = d.VMOP   */
+                CNEXT;
+
+   cVM_LISB:    vm->ip++;
+                lisb (VMOP)                            /*        b = d.VMOP   */
+                CNEXT;
+
+   cVM_SISA:    vm->ip++;
+                sisa (VMOP)                            /*   d.VMOP = a  */
+                CNEXT;
+
+   cVM_SISB:    vm->ip++;
+                sisb (VMOP)                            /*   d.VMOP = b  */
+                CNEXT;
+
+   cVM_INIS:    vm->ip++;
+                inis (VMOP)                            /*   d.VMOP = d.VMOP+1 */
+                CNEXT;
+
+   cVM_DEIS:    vm->ip++;
+                deis (VMOP)                            /*   d.VMOP = d.VMOP-1 */
+                CNEXT;
+
    cVM_DEFAULT: printf ("Instruction: %i : ",vm->image[vm->ip]);
 		printf ("Illegal opcode in stream detected !\n");
    

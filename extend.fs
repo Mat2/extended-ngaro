@@ -106,8 +106,8 @@ create <list>  ( -a )
 ( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
 ( Some shortcuts that save some typing and keep the code a    )
 ( bit cleaner in macros.                                      )
-(   ` wordname  =  ['] wordname compile                      )
-(   ` wordname  =  ['] wordname execute                      )
+(   ` wordname  =  ['] wordname compile                       )
+(   ` wordname  =  ['] wordname execute                       )
 ( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
 compiler: `  ( "- )  ' literal, which @ d->class @ compile ;
 
@@ -161,3 +161,37 @@ compiler: ;then ( - )
 : hex     ( - ) 16 base ! ;
 : octal   ( - )  8 base ! ;
 : binary  ( - )  2 base ! ;
+
+( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
+( Vocabulary support                                          )
+( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
+{{
+: voc-list-nil last @ ;
+: voc-list-set last ! ;
+   
+variable (context)
+variable (definitions)
+
+: context      (context) @ ;
+: context!     (context) ! ;
+: definitions  (definitions) @ ;
+: definitions! (definitions) ! ;
+
+---reveal---
+
+: current  voc-list-nil definitions! ;
+: previous context voc-list-set ;
+   
+: vocabulary: previous definitions variable:
+              voc-list-nil context!
+;
+
+: vocabulary ( a - ) @ voc-list-nil context!
+                       voc-list-set
+;
+
+: extend current previous definitions ;
+
+voc-list-nil context! current vocabulary: forth
+}}
+

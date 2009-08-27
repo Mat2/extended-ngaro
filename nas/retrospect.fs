@@ -1,3 +1,5 @@
+assembler vocabulary
+
 ( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
 ( Retrospect by Charles Childers                              )
 ( This code is gifted to the public domain. Share freely.     )
@@ -151,3 +153,5 @@
                 again 
   ;
 }} 
+
+current vocabulary: disassembler

@@ -1,3 +1,5 @@
+assembler vocabulary
+
 : fib-loop  ins adda
                 swps
                 decd

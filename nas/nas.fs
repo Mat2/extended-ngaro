@@ -170,3 +170,4 @@
 
 : ], , cmode compiler ! ;
 
+current vocabulary: assembler

@@ -1,3 +1,5 @@
+assembler vocabulary
+
 : loop-test ins inca 
                 decb
                 bnzb [ tail ], rts
